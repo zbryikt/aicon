@@ -1,0 +1,131 @@
+| {% load compressed %}
+!!!5
+html
+  head
+    meta(charset="utf-8")
+    | {% compressed_css 'vendor' %}
+    | {% compressed_css 'main' %}
+    | {% compressed_js 'vendor' %}
+    | {% compressed_js 'main' %}
+  body(ng-app="main", ng-controller="main")
+    img(src="/s/img/logo.png",style="vertical-align: top;width: 100px;margin-top:-5px")
+
+    | {% verbatim %}
+    div(style="display: inline-block;")
+      .iconset(ng-repeat="s in iconset.list")
+        icon(src="{{s.cover}}")
+        .name {{s.name}}
+    | {% endverbatim %}
+    //-h1 圖示字型彙編
+    | {% if user.is_authenticated %}
+    | {{ user.username }}
+    span 登出
+    | {% else %}
+    a(href="/accounts/facebook/login/?process=login") 用臉書帳號登入
+    | {% endif %}
+    br
+
+    .title
+      span(style="font-weight:900;font-size: 18px")
+        | iCON LiST
+        button.btn.btn-link(ng-click="buildFont()") 建立字型
+        button.btn.btn-link(ng-click="iconset.cur.save()") 儲存快選單
+        button.btn.btn-link(data-toggle="modal",href="#glyph-uploader") 上傳圖示
+        button.btn.btn-link(data-toggle="modal",href="#license-uploader") 建立授權
+      input.form-control(style="height: 30px;vertical-align:baseline;display:inline-block;width: 300px",type="text",ng-model="searchKeyword",ng-change="search()",placeholder="搜尋圖示...")
+    .iconset-glyph-list
+      .glyph.small.upload
+        icon(src="svg/default.svg")
+        .name upload
+      | {% verbatim %}
+      .glyph.small(ng-repeat="g in iconset.cur.icons")
+        icon(src="{{g.svg}}")
+        .name {{g.name}}
+      | {% endverbatim %}
+    div(style="display: block;margin-bottom: 110px")
+
+    #glyph-uploader.modal.fade: .modal-dialog: .modal-content
+      .modal-header
+        button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+        h4.modal-title Upload Icon
+      .modal-body: .row
+        .col-sm-5
+          div(style="width: 200px;height:200px;background: #eee;margin:10px 0")
+        .col-sm-7: .form
+          .form-row
+            .form-label Icon Name
+            .form-input: input(type="text",name="name", placeholder="icon name")
+          .form-row
+            .form-label Author Name
+            .form-input: input(type="text",name="name", placeholder="author")
+          .form-row
+            .form-label Author URL
+            .form-input: input(type="text",name="name", placeholder="url for author")
+          .form-row
+            .form-label License
+            .form-input: input(type="text",name="name", placeholder="license")
+          .form-row
+            .form-label Tags
+            .form-input: textarea
+            //-input(type="text",name="name", placeholder="tags")
+      .modal-footer
+        button.btn.btn-primary Upload
+        button.btn.btn-default(data-dismiss="modal") Cancel
+
+    #license-uploader.modal.fade: .modal-dialog: .modal-content
+      .modal-header
+        button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+        h4.modal-title Add New License Type
+      .modal-body
+        .form
+          .form-row
+            .form-label License Name
+            .form-input: input(type="text",name="name", placeholder="icon name")
+          .form-row
+            .form-label Description
+            .form-input: input(type="text",name="name", placeholder="author")
+          .form-row
+            .form-label License URL
+            .form-input: input(type="text",name="name", placeholder="url for author")
+          .form-row
+            .form-label Type
+            .form-input
+              input(type="checkbox",name="name", placeholder="license")
+              | Public Domain
+              input(type="checkbox",name="name", placeholder="license")
+              | Attribution
+              input(type="checkbox",name="name", placeholder="license")
+              | Share Alike
+              input(type="checkbox",name="name", placeholder="license")
+              | No Derive
+              input(type="checkbox",name="name", placeholder="license")
+              | No Commercial
+          .form-row
+            .form-label License File
+            .form-input: input(type="file",placholder="optional")
+      .modal-footer
+        button.btn.btn-primary Create
+        button.btn.btn-default(data-dismiss="modal") Cancel
+
+    //-
+      form(action="/glyph/",method="post",enctype="multipart/form-data")
+        | {% csrf_token %}
+        | {{ glyph_form.as_p }}
+        input(type="submit", value="submit")
+      | 新增授權
+      form(action="/license/",method="post",enctype="multipart/form-data")
+        | {% csrf_token %}
+        | {{ license_form.as_p }}
+        input(type="submit", value="submit")
+    | {% verbatim %}
+    .glyph(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)")
+      icon(src="{{g.svg}}")")
+      .name {{g.name}}
+      .author
+        | By
+        a(href="{{g.author_url}}#") {{g.author}}
+        |  @
+        a(href="{{g.license_url}}#") {{g.license}}
+      .tags
+        .tag(ng-repeat="t in g.tags") {{t}}
+    | {% endverbatim %}

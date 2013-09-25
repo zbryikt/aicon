@@ -1,0 +1,10 @@
+!!!5
+html
+  head
+  body
+    | hello world!
+    | {{ form.errors }}
+    form(action="/glyph/",method="post",enctype="multipart/form-data")
+      | {% csrf_token %}
+      | {{ form.as_p }}
+      input(type="submit", value="submit")

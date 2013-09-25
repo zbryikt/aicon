@@ -1,0 +1,33 @@
+| {% load compressed %}
+| {% load svg_name %}
+!!!5
+html
+  head
+    meta(charset="utf-8")
+    | {% compressed_css 'vendor' %}
+    | {% compressed_css 'main' %}
+    | {% compressed_js 'vendor' %}
+    | {% compressed_js 'main' %}
+  body
+    | {{ form.errors }}
+    a(href="/build/") build font
+    form(action="/glyph/",method="post",enctype="multipart/form-data")
+      | {% csrf_token %}
+      | {{ form.as_p }}
+      input(type="submit", value="submit")
+    hr
+    | {% for g in glyphs %}
+    .glyph
+      object.svg(type="image/svg+xml",data="/m/{{g.svg}}")
+      .name {{g.svg|svg_name}}
+      .author
+        | By
+        a(href="{{g.author_url}}#") {{g.author}}
+        |  @
+        a(href="{{g.license_url}}#") {{g.license}}
+      .tags
+        | {% for t in g.tags.all %}
+        .tag {{ t }}
+        | {% endfor %} 
+        
+    | {% endfor %}
