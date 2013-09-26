@@ -1,0 +1,12 @@
+!!!5
+html
+  head
+    link(rel="stylesheet",type="text/css",href="/s/v/css/select2.css")
+    script(src="/s/v/js/jquery-1.7.1.min.js")
+    script(src="/s/v/js/select2.3.4.3.js")
+  body
+    input#blah(type="hidden",value="1,2,3")
+    script(type="text/javascript").
+      $(document).ready(function() {
+        $("#blah").select2();
+      });

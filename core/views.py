@@ -7,6 +7,7 @@ from django.db.models import Q
 from main import settings
 from utils import utils
 from django.core import serializers
+from taggit.models import Tag
 import fontforge, os, random, glob, zipfile, StringIO, os.path, json
 
 KERNING = 0
@@ -86,8 +87,11 @@ class GlyphView(utils.RestView):
   wrapper = Glyph.Wrapper
 
   def post(self, request, *args, **kwargs):
+    print(request.POST)
     form = forms.GlyphForm(request.POST, request.FILES)
+    print("Glyph Post")
     if not form.is_valid():    
+      print(form)
       context = {"form": form}
       return render(request, 'glyph.jade', context)
     tags = form.cleaned_data["tags"]
@@ -127,11 +131,11 @@ class LicenseView(utils.RestView):
     form = forms.LicenseForm(request.POST, request.FILES)
     if not form.is_valid():    
       context = {"form": form}
-      return render(request, 'license-list.jade', context)
+      return HttpResponse("[-1]")
     license = form.save(commit=False)
     license.creator = request.user
     license.save()
-    return redirect("/")
+    return HttpResponse("[0]")
 
 class License2View(TemplateView):
   def post(self, request, *args, **kwargs):
@@ -189,3 +193,7 @@ class IconsetView(utils.RestView):
       c = Choice.objects.create(glyph=d_gs[gpk], iconset=iconset)
       c.save()
     return HttpResponse('["ok"]')
+
+class TagView(utils.RestView):
+  des_model = Tag
+  query_attr = ["name"]

@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     url(r'^$', views.IndexView.as_view()),#TemplateView.as_view(template_name = "index.jade")),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^', include('core.urls')),
+    url(r'^test/$', TemplateView.as_view(template_name = 'test.jade')),
 )
 
 if settings.DEBUG:

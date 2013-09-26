@@ -1,5 +1,5 @@
 var main;
-angular.module('main', []).config(function($httpProvider){
+angular.module('main', ['ui.select2']).config(function($httpProvider){
   return $httpProvider.defaults.headers.common["X-CSRFToken"] = $.cookie('csrftoken');
 }).directive('icon', function(){
   return {
@@ -18,6 +18,23 @@ angular.module('main', []).config(function($httpProvider){
 });
 main = function($scope, $http){
   $scope.glyphs = [];
+  $scope.tag = {
+    list: []
+  };
+  $scope.lic = {
+    name: "",
+    desc: "",
+    url: "",
+    pd: false,
+    at: false,
+    sa: false,
+    nd: false,
+    nc: false,
+    file: null
+  };
+  $scope.glyph = {
+    'new': {}
+  };
   $scope.iconset = {
     list: [],
     cur: {}
@@ -70,12 +87,54 @@ main = function($scope, $http){
       return console.log(d, 'done');
     });
   };
+  $scope.iconset.cur.set = function(s){
+    var ref$;
+    console.log('clicked');
+    return (ref$ = $scope.iconset.cur).icons = s.icons, ref$.pk = s.pk, ref$.name = s.name, s;
+  };
   $scope.iconset.load = function(){
     return $http.get('/iconset/').success(function(d){
       $scope.iconset.list = d;
       return console.log(">>", d);
     });
   };
+  $scope.lic.load = function(){
+    return $http.get('/license/').success(function(d){
+      return $scope.lic.list = d.data;
+    });
+  };
+  $scope.lic.add = function(){
+    if (!$scope.lic.name) {
+      return;
+    }
+    $('#lic-form-pxy').load(function(){
+      return $('#lic-uploader').modal('hide');
+    });
+    return $('#lic-form').submit();
+  };
+  $scope.glyph['new'].setSvg = function(it){
+    console.log($(it).val());
+    $scope.glyph['new'].svg = $(it).val();
+    return $scope.$apply();
+  };
+  $scope.glyph.add = function(){
+    if (!$scope.glyph['new'].name) {
+      return;
+    }
+    if (!$('#glyph-uploader-svg').val()) {
+      return;
+    }
+    $('#glyph-form-pxy').load(function(){
+      return $('#glyph-uploader').modal('hide');
+    });
+    return $('#glyph-form').submit();
+  };
+  $scope.tag.load = function(){
+    return $http.get('/tag/').success(function(d){
+      return $scope.tag.list = d.data;
+    });
+  };
+  $scope.lic.load();
   $scope.search();
   return $scope.iconset.load();
 };

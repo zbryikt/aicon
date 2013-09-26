@@ -1,3 +1,5 @@
+#uploader
+  display: none
 .form
   display: table
   margin: 0 0 10px
@@ -16,4 +18,54 @@
   .ps
     margin: 0
     font-size: 13px
+#glyph-uploader 
+  input[type=file]
+    position: absolute
+    width: 200px
+    height: 200px
+    opacity: 0.01
+    top: 10px
+    left: 15px
+    cursor: pointer
+  .upload
+    width: 200px
+    height: 200px
+    background: #eee
+    margin: 10px 0
+    font-size: 163px
+    text-align: center
+    color: #ccc
+    text-shadow: 0 3px 3px rgba(0,0,0,0.1)
+    cursor: pointer
+    &:hover
+      text-shadow: 0 1px 3px rgba(0,0,0,0.1)
+    .name
+      position: absolute
+      top: 100px
+      left: 0
+      width: 80%
+      color: #000
+      text-overflow: ellipsis
+      overflow: hidden
+      margin-left: 10%
+      font-size: 16px
+      
 
+.license-chooser
+  width: 100%
+
+.tags
+  width: 100%
+  min-height: 30px
+  .select2-choices
+    border: none
+    background: #fdfdfd
+    box-shadow: inset 0 1px 5px rgba(0,0,0,0.1)
+  
+.required
+  &:after
+    color: #f02
+    content: "*"
+
+.pxy
+  display: none

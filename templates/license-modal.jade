@@ -1,0 +1,50 @@
+iframe.pxy#lic-form-pxy(name="lic-form-pxy",height="0",width="0")
+form#lic-form(enctype="multipart/form-data",method="post",target="lic-form-pxy",action="/license/")
+  | {% csrf_token %}
+  | {% verbatim %}
+  #lic-uploader.modal.fade: .modal-dialog: .modal-content
+    .modal-header
+      button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+      h4.modal-title Add New License Type
+    .modal-body
+      .form
+        .form-row
+          .form-label
+            | License Name
+            i.required
+          .form-input: input.form-control(type="text",name="name", placeholder="License Name",ng-model="lic.name")
+        .form-row
+          .form-label Description
+          .form-input: textarea.form-control(type="text",name="desc", placeholder="Description",ng-model="lic.desc")
+        .form-row
+          .form-label License URL
+          .form-input: input.form-control(type="text",name="url", placeholder="License URL",ng-model="lic.url")
+        .form-row
+          .form-label Type
+          .form-input
+            .ib
+              input(type="checkbox",name="public_domain", placeholder="license",ng-model="lic.pd")
+              |  Public Domain
+            .ib(style="float:left;width: 50%")
+              input(type="checkbox",name="attribution", placeholder="license",ng-model="lic.at")
+              |  Attribution
+              br
+              input(type="checkbox",name="sharealike", placeholder="license",ng-model="lic.sa")
+              |  Share Alike
+              br
+            .ib(style="float:left;width: 50%")
+              input(type="checkbox",name="no_derive", placeholder="license",ng-model="lic.nd")
+              |  No Derive
+              br
+              input(type="checkbox",name="no_commercial", placeholder="license",ng-model="lic.nc")
+              |  No Commercial
+        .form-row
+          .form-label License File
+          .form-input: input(type="file",name="file",placholder="optional")
+      | (
+      i.required
+      | : required )
+    .modal-footer
+      button.btn.btn-primary(ng-click="lic.add()") Create
+      button.btn.btn-default(data-dismiss="modal") Cancel
+  | {% endverbatim %}

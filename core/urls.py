@@ -14,5 +14,6 @@ urlpatterns = patterns('',
     url(r'^license/(?P<id>\d+)/$', views.LicenseView.as_view()),
     url(r'^iconset/$', views.IconsetView.as_view()),
     url(r'^iconset/(?P<id>\d+)/$', views.IconsetView.as_view()),
+    url(r'^tag/$', views.TagView.as_view()),
 )
 

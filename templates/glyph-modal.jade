@@ -1,0 +1,46 @@
+iframe.pxy#glyph-form-pxy(name="glyph-form-pxy",height="0",width="0")
+form#glyph-form(enctype="multipart/form-data",method="post",target="glyph-form-pxy",action="/glyph/")
+  | {% csrf_token %}
+  | {% verbatim %}
+  #glyph-uploader.modal.fade: .modal-dialog: .modal-content
+    .modal-header
+      button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+      h4.modal-title Upload Icon
+    .modal-body: .row
+      .col-sm-5
+        .upload
+          i.glyphicon.glyphicon-upload
+          .name {{glyph.new.svg}}
+        input#glyph-uploader-svg(type="file",name="svg",onchange="angular.element(this).scope().glyph.new.setSvg(this)")
+      .col-sm-7
+        .form
+          .form-row
+            .form-label
+              | Icon Name
+              i.required
+            .form-input: input(type="text",name="name", placeholder="Icon Name",ng-model="glyph.new.name")
+          .form-row
+            .form-label
+              | Author Name
+              i.required
+            .form-input: input(type="text",name="author", placeholder="Author",ng-model="glyph.new.author")
+          .form-row
+            .form-label Author URL
+            .form-input: input(type="text",name="author_url", placeholder="URL to Author",ng-model="glyph.new.author_url")
+          .form-row
+            .form-label
+              | License
+              i.required
+            .form-input
+              select.license-chooser(name="license",ng-model="glyph.new.license")
+                option
+                option(ng-repeat="it in lic.list",value="{{it.pk}}") {{it.fields.name}}
+        small(style="display:block;margin:0 0 7px 0;background: #eee;padding:3px 13px") tags
+        input.tags(type="hidden",name="tags")
+      | (
+      i.required
+      | : required )
+    .modal-footer
+      button.btn.btn-primary(ng-click="glyph.add()") Upload
+      button.btn.btn-default(data-dismiss="modal") Cancel
+  | {% endverbatim %}
