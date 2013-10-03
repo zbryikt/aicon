@@ -1,0 +1,82 @@
+@import base
+@import "compass/css3/user-interface"
+
+.iconset
+  display: inline-block
+  width: 60px
+  height: 101px
+  margin: 3px
+  text-align: center
+  &:hover
+    object
+      box-shadow: 0 0 3px rgba(0,0,0,0.2)
+    .mask
+      background: rgba(0,0,0,0.15)
+    .name
+      color: #000
+
+.iconset 
+  .name
+    color: #666
+    margin-top: 5px
+    line-height: 12px
+    font-size: 10px
+    height: 26px
+    max-height: 24px
+    overflow: hidden
+    text-overflow: ellipsis
+    
+  .svg
+    width: 45px
+    height: 45px
+
+  object
+    border: 1px solid rgba(0,0,0,0.05)
+    border-radius: 5px
+
+  .mask
+    border-radius: 2px
+    &:before
+      position: absolute
+      top: 2px
+      left: 2px
+      content: " "
+      width: 100%
+      height: 100%
+      border-bottom: 1px solid rgba(0,0,0,0.2)
+      border-right: 1px solid rgba(0,0,0,0.2)
+
+.iconset-glyph-list
+  @include user-select(none)
+  position: absolute
+  width: 100%
+  height: 110px
+  padding: 20px
+  margin-left: -15px
+  background: rgba(0,0,0,0.6)
+  .name
+    color: #fff
+  .svg
+    &:before
+      position: absolute
+      top: 0
+      left: 0
+      content: " "
+      width: 100%
+      height: 100%
+      background: rgba(255,255,255,0.3)
+
+
+#choose-hint
+  .svg
+    cursor: default
+  object
+    border: 1px dashed rgba(0,0,0,0.5)
+    border-radius: 5px
+    width: 84%
+    height: 84%
+    margin: 8%
+  .mask
+    display: none
+  .name
+    color: #999

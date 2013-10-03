@@ -159,6 +159,14 @@ class IconsetView(utils.RestView):
   query_attr = ["id", "name", "user__username"]
   order_by = "-create_date"
 
+  def delete(self, request, *args, **kwargs):
+    try: 
+      id = int(kwargs["id"])
+      iconset = Iconset.objects.get(pk=id)
+      iconset.delete()
+    except: raise Http404()
+    return HttpResponse("[0]")
+
   def get(self, request, *args, **kwargs):
     try: id = int(kwargs.get("id")) or -1
     except: id = 0
@@ -183,12 +191,13 @@ class IconsetView(utils.RestView):
     k_gs = d_gs.keys()
     data["icons"] = filter(lambda x: x in k_gs, data["icons"])
     if len(data.get("icons") or [])==0: return HttpResponse("[]")
-    try: iconset = Iconset.objects.get(data.get("pk") or -1)
+    print("pk: %d"%data.get("pk"))
+    try: iconset = Iconset.objects.get(pk=(data.get("pk") or -1))
     except: iconset = Iconset.objects.create(user=request.user)
     if data.get("name"): iconset.name = data["name"]
     iconset.save()
     for gpk in data["icons"]:
-      c = Choice.objects.filter(Q(glyph__pk__in=data["icons"]) & Q(iconset=iconset))
+      c = Choice.objects.filter(Q(glyph__pk=gpk) & Q(iconset=iconset))
       if len(c): continue
       c = Choice.objects.create(glyph=d_gs[gpk], iconset=iconset)
       c.save()

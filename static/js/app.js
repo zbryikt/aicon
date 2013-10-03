@@ -1,16 +1,25 @@
 var main;
-angular.module('main', ['ui.select2']).config(function($httpProvider){
+angular.module('main', []).config(function($httpProvider){
   return $httpProvider.defaults.headers.common["X-CSRFToken"] = $.cookie('csrftoken');
-}).directive('icon', function(){
+}).directive('icon', function($compile){
   return {
     restrict: 'E',
     replace: true,
+    scope: {
+      "src": "@",
+      "del": "&",
+      "class": "@"
+    },
+    template: "<div class='svg-icon {{class}}'><div class='object'></div><div class='mask'></div>" + "<div class='delete' ng-click='$event.stopPropagation();del({e: $event})'>" + "<i class='glyphicon glyphicon-minus-sign'></i></div></div>",
     link: function(scope, element, attrs){
+      if (!attrs.del) {
+        element.find('.delete').remove();
+      }
       return attrs.$observe('src', function(v){
         if (v) {
-          return element.html("<div class='svg'><object type='image/svg+xml' data='/m/" + v + "'></object><div class='mask'></div></div>");
+          return element.find('.object').replaceWith("<object class='object' type='image/svg+xml' data='/m/" + v + "'></object>");
         } else {
-          return element.html("<div></div>");
+          return element.find('.object').replaceWith("<div class='object'>no data</div>");
         }
       });
     }
@@ -45,11 +54,26 @@ main = function($scope, $http){
     name: ""
   };
   $scope.searchKeyword = "";
+  $scope.iconset.del = function(e, s){
+    var this$ = this;
+    return $http['delete']("/iconset/" + s.pk).success(function(d){
+      var that;
+      if (that = this$.list.indexOf(s) + 1) {
+        return this$.list.splice(that - 1, 1);
+      }
+    });
+  };
   $scope.iconset.cur.add = function(g){
     if (!$scope.iconset.cur.icons.filter(function(it){
-      return it.pk === g.pk;
+      return parseInt(it.pk) === parseInt(g.pk);
     }).length) {
       return $scope.iconset.cur.icons.push(g);
+    }
+  };
+  $scope.iconset.cur.del = function(e, g){
+    var that;
+    if (that = this.icons.indexOf(g) + 1) {
+      return this.icons.splice(that - 1, 1);
     }
   };
   $scope.search = function(){
@@ -59,8 +83,7 @@ main = function($scope, $http){
         q: $scope.searchKeyword
       }
     }).success(function(d){
-      $scope.glyphs = d.data;
-      return console.log(d);
+      return $scope.glyphs = d.data;
     });
   };
   $scope.buildFont = function(){
@@ -76,26 +99,24 @@ main = function($scope, $http){
     });
   };
   $scope.iconset.cur.save = function(){
-    var data, ref$;
-    data = {};
-    ref$ = $scope.iconset.cur, data.pk = ref$.pk, data.name = ref$.name;
-    data.icons = $scope.iconset.cur.icons.map(function(it){
+    var ref$, ref1$;
+    if (this.icons.length === 0) {
+      return;
+    }
+    return $http.post('/iconset/', (ref$ = (ref1$ = {}, ref1$.pk = this.pk, ref1$.name = this.name, ref1$), ref$.icons = this.icons.map(function(it){
       return it.pk;
-    });
-    console.log(data);
-    return $http.post('/iconset/', data).success(function(d){
-      return console.log(d, 'done');
+    }), ref$)).success(function(d){
+      console.log("save iconset done");
+      return $scope.iconset.load();
     });
   };
   $scope.iconset.cur.set = function(s){
     var ref$;
-    console.log('clicked');
     return (ref$ = $scope.iconset.cur).icons = s.icons, ref$.pk = s.pk, ref$.name = s.name, s;
   };
   $scope.iconset.load = function(){
     return $http.get('/iconset/').success(function(d){
-      $scope.iconset.list = d;
-      return console.log(">>", d);
+      return $scope.iconset.list = d;
     });
   };
   $scope.lic.load = function(){
@@ -125,7 +146,8 @@ main = function($scope, $http){
       return;
     }
     $('#glyph-form-pxy').load(function(){
-      return $('#glyph-uploader').modal('hide');
+      $('#glyph-uploader').modal('hide');
+      return $scope.search();
     });
     return $('#glyph-form').submit();
   };

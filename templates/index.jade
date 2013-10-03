@@ -13,57 +13,55 @@ html
     | {% verbatim %}
     div(style="display: inline-block;")
       .iconset(ng-repeat="s in iconset.list",ng-click="iconset.cur.set(s)")
-        icon(src="{{s.cover}}")
+        icon(src="{{s.cover}}",del="iconset.del(e,s)")
         .name {{s.name}}
     | {% endverbatim %}
-    //-h1 圖示字型彙編
-    | {% if user.is_authenticated %}
-    | {{ user.username }}
-    span 登出
-    | {% else %}
-    a(href="/accounts/facebook/login/?process=login") 用臉書帳號登入
-    | {% endif %}
-    br
 
-    .title
+    #menu-bar
       span(style="font-weight:900;font-size: 18px")
-        | iCON LiST
+        input#iconset-name(type="text",value="圖示集", placeholder="(圖示集的名稱)",ng-model="iconset.cur.name")
+        i.glyphicon.glyphicon-edit(onclick="$('#iconset-name').focus();")
         button.btn.btn-link(ng-click="buildFont()") 建立字型
         button.btn.btn-link(ng-click="iconset.cur.save()") 儲存快選單
         button.btn.btn-link(data-toggle="modal",href="#glyph-uploader") 上傳圖示
         button.btn.btn-link(data-toggle="modal",href="#lic-uploader") 建立授權
       input.form-control(style="height: 30px;vertical-align:baseline;display:inline-block;width: 300px",type="text",ng-model="searchKeyword",ng-change="search()",placeholder="搜尋圖示...")
+      span.acc-panel.pull-right
+        | {% if user.is_authenticated %}
+        | {{ user.username }}
+        span 登出
+        | {% else %}
+        a(href="/accounts/facebook/login/?process=login") 用臉書帳號登入
+        | {% endif %}
+
     .iconset-glyph-list
-      .glyph.small.upload
-        icon(src="svg/default.svg")
-        .name upload
+      #choose-hint.glyph.small(ng-show="iconset.cur.icons.length==0")
+        icon.chosen(src="svg/default.svg")
+        .name (no item)
       | {% verbatim %}
       .glyph.small(ng-repeat="g in iconset.cur.icons")
-        icon(src="{{g.svg}}")
+        icon.chosen(src="{{g.svg}}",del="iconset.cur.del(e,g)")
         .name {{g.name}}
       | {% endverbatim %}
     div(style="display: block;margin-bottom: 110px")
     | {% include 'glyph-modal.jade' %}
     | {% include 'license-modal.jade' %}
-    //-
-      form(action="/glyph/",method="post",enctype="multipart/form-data")
-        | {% csrf_token %}
-        | {{ glyph_form.as_p }}
-        input(type="submit", value="submit")
-      | 新增授權
-      form(action="/license/",method="post",enctype="multipart/form-data")
-        | {% csrf_token %}
-        | {{ license_form.as_p }}
-        input(type="submit", value="submit")
     | {% verbatim %}
-    .glyph(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)")
-      icon(src="{{g.svg}}")")
-      .name {{g.name}}
-      .author
-        | By
-        a(href="{{g.author_url}}#") {{g.author}}
-        |  @
-        a(href="{{g.license_url}}#") {{g.license}}
-      .tags
-        .tag(ng-repeat="t in g.tags") {{t}}
-    | {% endverbatim %}
+    .ico-list(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)")
+      .icons
+        icon.ico-main(src="{{g.svg}}")")
+        .ib
+          icon.ico1(src="{{g.svg}}")")
+          icon.ico2(src="{{g.svg}}")")
+          br
+          icon.ico3(src="{{g.svg}}")")
+          icon.ico4(src="{{g.svg}}")")
+      .infos
+        .name {{g.name}}
+        .author
+          a(href="{{g.author_url}}#") {{g.author}}
+          |  @ 
+          a(href="{{g.license_url}}#") {{g.license}}
+        .tags
+          .tag(ng-repeat="t in g.tags") {{t}}
+      | {% endverbatim %}

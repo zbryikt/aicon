@@ -1,15 +1,20 @@
-angular.module \main, <[ui.select2]>
+angular.module \main, <[]>
 .config ($httpProvider) ->
   $httpProvider.defaults.headers.common["X-CSRFToken"] = $.cookie \csrftoken
-.directive \icon, ->
-  return {
+.directive \icon, ($compile)->
+  return
     restrict: 'E' 
     replace: true
+    scope: {"src": "@", "del": "&", "class": "@"}
+    template:
+      "<div class='svg-icon {{class}}'><div class='object'></div><div class='mask'></div>" + 
+      "<div class='delete' ng-click='$event.stopPropagation();del({e: $event})'>" +
+      "<i class='glyphicon glyphicon-minus-sign'></i></div></div>"
     link: (scope, element, attrs) ->
+      if !attrs.del => element.find \.delete .remove!
       attrs.$observe \src, (v) ->
-        if v => element.html "<div class='svg'><object type='image/svg+xml' data='/m/#{v}'></object><div class='mask'></div></div>"
-        else element.html "<div></div>"
-  }
+        if v => element.find \.object .replaceWith "<object class='object' type='image/svg+xml' data='/m/#{v}'></object>"
+        else element.find \.object .replaceWith "<div class='object'>no data</div>"
 
 main = ($scope, $http) ->
   $scope.glyphs = []
@@ -19,14 +24,18 @@ main = ($scope, $http) ->
   $scope.iconset = {list: [], cur: {}}
   $scope.iconset.cur = icons: [], pk: -1, name: ""
   $scope.search-keyword = ""
+  $scope.iconset.del = (e, s) ->
+    $http.delete "/iconset/#{s.pk}"
+    .success (d) ~> if @list.indexOf(s) + 1 => @list.splice(that - 1, 1)
+
   $scope.iconset.cur.add = (g) ->
-    if !($scope.iconset.cur.icons.filter -> it.pk==g.pk).length => $scope.iconset.cur.icons.push g
+    if !($scope.iconset.cur.icons.filter -> parseInt(it.pk)==parseInt(g.pk)).length => $scope.iconset.cur.icons.push g
+  $scope.iconset.cur.del = (e, g) ->
+    if @icons.indexOf(g) + 1 => @icons.splice(that - 1, 1)
   $scope.search = ->
     console.log $scope.search-keyword
     $http.get \/glyph/, {params: {q: $scope.search-keyword}}
-    .success (d) ->
-      $scope.glyphs = d.data
-      console.log d
+    .success (d) -> $scope.glyphs = d.data
   $scope.build-font = ->
     $http.post \/build/, ($scope.iconset.cur.icons.map (-> it.pk))
     .success (d) ->
@@ -35,21 +44,17 @@ main = ($scope, $http) ->
         window.location.href = "/build/#{d.name}"
       else console.log "build font failed."
   $scope.iconset.cur.save = ->
-    data = {}
-    data{pk, name} = $scope.iconset.cur
-    data.icons = ($scope.iconset.cur.icons.map (-> it.pk))
-    console.log data
-    $http.post \/iconset/, data
-    .success (d) ->
-      console.log d,\done
+    if @icons.length==0 => return
+    $http.post \/iconset/, {} <<< @{pk,name} <<< {icons: @icons.map ->it.pk }
+    .success (d) -> 
+      console.log "save iconset done"
+      $scope.iconset.load!
   $scope.iconset.cur.set = (s) ->
-    console.log \clicked
     $scope.iconset.cur{icons,pk,name} = s
   $scope.iconset.load = ->
     $http.get \/iconset/
     .success (d) ->
       $scope.iconset.list = d
-      console.log ">>",d
   $scope.lic.load = ->
     $http.get \/license/
     .success (d) -> $scope.lic.list = d.data
@@ -68,6 +73,7 @@ main = ($scope, $http) ->
     if not ( $ \#glyph-uploader-svg .val! ) => return
     $ \#glyph-form-pxy .load ->
       $ \#glyph-uploader .modal \hide
+      $scope.search!
     $ \#glyph-form .submit!
     
   $scope.tag.load = ->
