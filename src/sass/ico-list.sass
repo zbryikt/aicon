@@ -1,9 +1,8 @@
+@import base
 body
   background: url(/s/img/white_carbon.png)
-.ico-list
-  &:hover
-    background: rgba(221, 249, 255, 0.7)
-.ico-list
+
+.ico-li-it
   display: inline-block
   width: 201px
   height: 211px
@@ -11,8 +10,45 @@ body
   margin: 10px 10px 10px
   padding: 10px
   border-radius: 5px
+  &:hover
+    background: rgba(221, 249, 255, 0.7)
+    .delete
+      display: block
+  .delete
+    display: none
+    @include act-icon
+    position: absolute
+    top: -6px
+    left: -6px
+    color: #f02
+    &:before
+      content: " "
+      position: absolute
+      top: 5px
+      left: 3px
+      background: #fff
+      width: 8px
+      height: 8px
+
+.ico-li-it
   .infos
+    font-size: 12px
+    font-family: arial
     clear: both
+    .text
+      background: rgba(255,255,255,0.5)
+      padding: 0 0 2px 5px
+      margin: 0 0 3px
+      border-radius: 2px
+    .name
+      font-size: 14px
+      // background: rgba(255,255,255,0.5)
+      // border-radius: 2px
+    .author
+      color: #888
+      font-size: 11px
+      margin: 2px 5px 0 0
+      text-align: right
     .tag
       float: left
       margin: 1px
@@ -28,13 +64,10 @@ body
       float: left
     br
       clear: both
-
-
-.ico-list
   .icons .mask
     border-radius: 3px
     border: 1px solid rgba(0,0,0,0.13)
-    box-shadow: 0 1px 5px rgba(0,0,0,0.08)
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05)
   .ico-main
     margin: 0 3px 5px 0
     width: 86px
@@ -71,3 +104,16 @@ body
     object
       filter: invert(100%)
       -webkit-filter: invert(100%)
+
+.ico-li.small
+  margin: 20px
+  .ico-li-it
+    @include act-icon
+    margin: 5px
+    padding: 4px
+    width: 56px
+    height: 56px
+    border: 1px solid rgba(0,0,0,0.1)
+  .svg-icon
+    width: 48px
+    height: 48px

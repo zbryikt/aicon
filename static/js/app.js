@@ -46,7 +46,8 @@ main = function($scope, $http){
   };
   $scope.iconset = {
     list: [],
-    cur: {}
+    cur: {},
+    detail: true
   };
   $scope.iconset.cur = {
     icons: [],

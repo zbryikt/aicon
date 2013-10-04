@@ -8,24 +8,36 @@ html
     | {% compressed_js 'vendor' %}
     | {% compressed_js 'main' %}
   body(ng-app="main", ng-controller="main")
-    img(src="/s/img/logo.png",style="vertical-align: top;width: 100px;margin-top:-5px")
+    #header
+      img#logo(src="/s/img/logo.png")
+      | {% verbatim %}
+      div(style="display: inline-block;")
+        .ico-li#iconset
+          .ico-li-it(ng-show="iconset.list.length==0)
+            icon(src="default/login.svg")")
+            .name login now to
+            br
+            .count make your iconset
 
-    | {% verbatim %}
-    div(style="display: inline-block;")
-      .iconset(ng-repeat="s in iconset.list",ng-click="iconset.cur.set(s)")
-        icon(src="{{s.cover}}",del="iconset.del(e,s)")
-        .name {{s.name}}
-    | {% endverbatim %}
+          .ico-li-it(ng-repeat="s in iconset.list",ng-click="iconset.cur.set(s)")
+            icon(src="{{s.cover}}",del="iconset.del(e,s)")
+            .name {{s.name}}
+            br
+            .count {{s.icons.length}} icons
+      | {% endverbatim %}
 
     #menu-bar
+      input#iconset-name(type="text",value="圖示集", placeholder="(圖示集的名稱)",ng-model="iconset.cur.name")
       span(style="font-weight:900;font-size: 18px")
-        input#iconset-name(type="text",value="圖示集", placeholder="(圖示集的名稱)",ng-model="iconset.cur.name")
         i.glyphicon.glyphicon-edit(onclick="$('#iconset-name').focus();")
         button.btn.btn-link(ng-click="buildFont()") 建立字型
         button.btn.btn-link(ng-click="iconset.cur.save()") 儲存快選單
         button.btn.btn-link(data-toggle="modal",href="#glyph-uploader") 上傳圖示
         button.btn.btn-link(data-toggle="modal",href="#lic-uploader") 建立授權
       input.form-control(style="height: 30px;vertical-align:baseline;display:inline-block;width: 300px",type="text",ng-model="searchKeyword",ng-change="search()",placeholder="搜尋圖示...")
+      span#menu-func
+        i.glyphicon.glyphicon-th(ng-click="iconset.detail=false",ng-class="{true:'',false:'sel'}[iconset.detail]")
+        i.glyphicon.glyphicon-th-large(ng-click="iconset.detail=true",ng-class="{true:'sel',false:''}[iconset.detail]")
       span.acc-panel.pull-right
         | {% if user.is_authenticated %}
         | {{ user.username }}
@@ -34,34 +46,39 @@ html
         a(href="/accounts/facebook/login/?process=login") 用臉書帳號登入
         | {% endif %}
 
-    .iconset-glyph-list
-      #choose-hint.glyph.small(ng-show="iconset.cur.icons.length==0")
-        icon.chosen(src="svg/default.svg")
-        .name (no item)
+    .ico-li.chosen
+      #choose-hint.ico-li-it(ng-show="iconset.cur.icons.length==0")
+        icon(src="svg/default.svg")
       | {% verbatim %}
-      .glyph.small(ng-repeat="g in iconset.cur.icons")
-        icon.chosen(src="{{g.svg}}",del="iconset.cur.del(e,g)")
-        .name {{g.name}}
+      .ico-li-it(ng-repeat="g in iconset.cur.icons")
+        icon(src="{{g.svg}}",del="iconset.cur.del(e,g)")
       | {% endverbatim %}
-    div(style="display: block;margin-bottom: 110px")
     | {% include 'glyph-modal.jade' %}
     | {% include 'license-modal.jade' %}
     | {% verbatim %}
-    .ico-list(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)")
-      .icons
+    .ico-li.small(ng-show="!iconset.detail")
+      .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)")
         icon.ico-main(src="{{g.svg}}")")
-        .ib
-          icon.ico1(src="{{g.svg}}")")
-          icon.ico2(src="{{g.svg}}")")
-          br
-          icon.ico3(src="{{g.svg}}")")
-          icon.ico4(src="{{g.svg}}")")
-      .infos
-        .name {{g.name}}
-        .author
-          a(href="{{g.author_url}}#") {{g.author}}
-          |  @ 
-          a(href="{{g.license_url}}#") {{g.license}}
-        .tags
-          .tag(ng-repeat="t in g.tags") {{t}}
-      | {% endverbatim %}
+    .ico-li(ng-show="iconset.detail")
+      .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)")
+        .icons
+          icon.ico-main(src="{{g.svg}}")")
+          .ib
+            icon.ico1(src="{{g.svg}}")")
+            icon.ico2(src="{{g.svg}}")")
+            br
+            icon.ico3(src="{{g.svg}}")")
+            icon.ico4(src="{{g.svg}}")")
+        .infos
+          .text
+            .name {{g.name}}
+            .author
+              | by
+              a(href="{{g.author_url}}#") {{g.author}}
+              |  @ 
+              a(href="{{g.license_url}}#") {{g.license}}
+          .tags
+            .tag(ng-repeat="t in g.tags") {{t}}
+        | {% endverbatim %}
+    #footer
+      | 愛 Aicon
