@@ -56,6 +56,24 @@ main = function($scope, $http){
   };
   $scope.searchKeyword = "";
   $scope.detail = {};
+  $scope.mouse = {
+    select: false
+  };
+  $scope.mouse.over = function(e, g){
+    console.log("moving: " + g.name);
+    if (this.select) {
+      return g.added = !g.added;
+    }
+  };
+  $scope.searchTimer = null;
+  $scope.$watch('searchKeyword', function(){
+    if ($scope.searchTimer) {
+      clearTimeout($scope.searchTimer);
+    }
+    return $scope.searchTimer = setTimeout(function(){
+      return $scope.search();
+    }, 700);
+  });
   $scope.detail.show = function(e, s){
     this.cur = s;
     console.log(s.tags, s.license);

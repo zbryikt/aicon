@@ -25,7 +25,16 @@ main = ($scope, $http) ->
   $scope.iconset.cur = icons: [], pk: -1, name: ""
   $scope.search-keyword = ""
   $scope.detail = {}
-  
+  $scope.mouse = {select: false}
+  $scope.mouse.over = (e, g) ->
+    console.log "moving: #{g.name}"
+    if @select => g.added = !g.added
+
+  $scope.search-timer = null
+  $scope.$watch \searchKeyword, ->
+    if $scope.search-timer => clearTimeout $scope.search-timer
+    $scope.search-timer = setTimeout (-> $scope.search!), 700
+
   $scope.detail.show = (e, s) ->
     @cur = s
     console.log s.tags, s.license

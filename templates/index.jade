@@ -7,7 +7,7 @@ html
     | {% compressed_css 'main' %}
     | {% compressed_js 'vendor' %}
     | {% compressed_js 'main' %}
-  body(ng-app="main", ng-controller="main")
+  body(ng-app="main", ng-controller="main",ng-mousedown="mouse.select=true",ng-mouseup="mouse.select=false")
     #header
       img#logo(src="/s/img/logo.png")
       | {% verbatim %}
@@ -33,8 +33,7 @@ html
         button.btn.btn-link(ng-click="buildFont()") 建立字型
         button.btn.btn-link(ng-click="iconset.cur.save()") 儲存快選單
         button.btn.btn-link(data-toggle="modal",href="#glyph-uploader") 上傳圖示
-        button.btn.btn-link(data-toggle="modal",href="#lic-uploader") 建立授權
-      input.form-control(style="height: 30px;vertical-align:baseline;display:inline-block;width: 300px",type="text",ng-model="searchKeyword",ng-change="search()",placeholder="搜尋圖示...")
+      input.form-control(style="height: 30px;vertical-align:baseline;display:inline-block;width: 300px",type="text",ng-model="searchKeyword",placeholder="搜尋圖示...")
       span#menu-func
         i.glyphicon.glyphicon-th(ng-click="iconset.detail=false",ng-class="{true:'',false:'sel'}[iconset.detail]")
         i.glyphicon.glyphicon-th-large(ng-click="iconset.detail=true",ng-class="{true:'sel',false:''}[iconset.detail]")
@@ -58,7 +57,7 @@ html
     | {% include 'license-modal.jade' %}
     | {% verbatim %}
     .ico-li.small.all(ng-show="!iconset.detail")
-      .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)",ng-class="{true:'added',false:''}[g.added]")
+      .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
         icon.ico-main(src="{{g.svg}}")")
     .ico-li.all(ng-show="iconset.detail")
       .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)",ng-class="{true:'added',false:''}[g.added]")

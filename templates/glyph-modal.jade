@@ -35,6 +35,7 @@ form#glyph-form(enctype="multipart/form-data",method="post",target="glyph-form-p
               input.license-chooser(name="license",ng-model="glyph.new.license")
                 option
                 option(ng-repeat="it in lic.list",value="{{it.pk}}") {{it.fields.name}}
+              i.glyphicon.glyphicon-plus(data-toggle="modal",href="#lic-uploader")
         small(style="display:block;margin:0 0 7px 0;background: #eee;padding:3px 13px") tags
         input.tags(type="hidden",name="tags")
       | (

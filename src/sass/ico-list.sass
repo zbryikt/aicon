@@ -15,12 +15,17 @@ body
   margin: 5px 5px 5px 5px
   padding: 7px
   border-radius: 5px
-  border: 1px solid rgba(0,0,0,0)
+  border: 1px solid rgba(0,0,0,0.15)
   background: rgba(255,255,255,0.5)
+  .icons > .ib
+    opacity: 0.05
   &:hover
-    background: rgba(221, 249, 255, 0.7)
+    //background: rgba(221, 249, 255, 0.7)
+    background: rgba(210,255,230,0.7)
     .delete
       display: block
+    .icons > .ib
+      opacity: 1.0
   .delete
     display: none
     @include act-icon
@@ -38,8 +43,10 @@ body
       height: 8px
 
 .ico-li.small .ico-li-it.added, .ico-li .ico-li-it.added
-  border: 1px solid #f90
-  background: #ffe
+  //border: 1px solid #f90
+  //background: #ffe
+  border: 1px solid #0ee
+  background: #eff
 
 .ico-li-it
   .infos
