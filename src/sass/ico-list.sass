@@ -2,14 +2,21 @@
 body
   background: url(/s/img/white_carbon.png)
 
+.ico-li.all
+  margin: 5px
+
 .ico-li-it
   display: inline-block
+  animation: fade-show 1s
+  -webkit-animation: hide 1s
   width: 201px
   height: 211px
   clear: both
-  margin: 10px 10px 10px
-  padding: 10px
+  margin: 5px 5px 5px 5px
+  padding: 7px
   border-radius: 5px
+  border: 1px solid rgba(0,0,0,0)
+  background: rgba(255,255,255,0.5)
   &:hover
     background: rgba(221, 249, 255, 0.7)
     .delete
@@ -30,6 +37,10 @@ body
       width: 8px
       height: 8px
 
+.ico-li.small .ico-li-it.added, .ico-li .ico-li-it.added
+  border: 1px solid #f90
+  background: #ffe
+
 .ico-li-it
   .infos
     font-size: 12px
@@ -49,6 +60,10 @@ body
       font-size: 11px
       margin: 2px 5px 0 0
       text-align: right
+    .tags
+      width: 100%
+      height: 42px
+      overflow: hidden
     .tag
       float: left
       margin: 1px
@@ -58,6 +73,14 @@ body
       color: #888
       background: #fbfbfb
       border-radius: 3px
+    .action
+      padding: 2px 1px
+      text-align: right
+      .detail
+        font-size: 12px
+        padding: 0 3px
+        margin: 0
+        height: 19px
   .icons
     clear: both
     .ib

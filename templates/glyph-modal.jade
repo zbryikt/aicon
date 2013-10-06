@@ -10,8 +10,8 @@ form#glyph-form(enctype="multipart/form-data",method="post",target="glyph-form-p
       .col-sm-5
         .upload
           i.glyphicon.glyphicon-upload
-          .name {{glyph.new.svg}}
-        input#glyph-uploader-svg(type="file",name="svg",onchange="angular.element(this).scope().glyph.new.setSvg(this)")
+          .name(style="font-size:12px") {{glyph.new.svg}}
+        input#glyph-uploader-svg(type="file",multiple,name="svg",onchange="angular.element(this).scope().glyph.new.setSvg(this)")
       .col-sm-7
         .form
           .form-row

@@ -24,17 +24,30 @@ main = ($scope, $http) ->
   $scope.iconset = {list: [], cur: {}, detail: true}
   $scope.iconset.cur = icons: [], pk: -1, name: ""
   $scope.search-keyword = ""
+  $scope.detail = {}
+  
+  $scope.detail.show = (e, s) ->
+    @cur = s
+    console.log s.tags, s.license
+    e.stopPropagation!
+    $ \#glyph-detail .modal \show
+
   $scope.iconset.del = (e, s) ->
     $http.delete "/iconset/#{s.pk}"
     .success (d) ~> if @list.indexOf(s) + 1 => @list.splice(that - 1, 1)
 
   $scope.iconset.cur.add = (g) ->
-    if !($scope.iconset.cur.icons.filter -> parseInt(it.pk)==parseInt(g.pk)).length => $scope.iconset.cur.icons.push g
+    if !(@icons.filter -> parseInt(it.pk)==parseInt(g.pk)).length =>
+      g.added = true
+      @icons.push g
+    else
+      @icons.splice @icons.indexOf(g), 1
+      g.added = false
   $scope.iconset.cur.del = (e, g) ->
     if @icons.indexOf(g) + 1 => @icons.splice(that - 1, 1)
   $scope.search = ->
     console.log $scope.search-keyword
-    $http.get \/glyph/, {params: {q: $scope.search-keyword}}
+    $http.get \/glyph/, {params: {q: $scope.search-keyword, page_limit: 100}}
     .success (d) -> $scope.glyphs = d.data
   $scope.build-font = ->
     $http.post \/build/, ($scope.iconset.cur.icons.map (-> it.pk))

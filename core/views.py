@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.views.generic import TemplateView, View
 from core import forms
 from core.models import Glyph, License, Iconset, Choice
@@ -87,19 +87,30 @@ class GlyphView(utils.RestView):
   wrapper = Glyph.Wrapper
 
   def post(self, request, *args, **kwargs):
+    print("--------")
     print(request.POST)
-    form = forms.GlyphForm(request.POST, request.FILES)
-    print("Glyph Post")
-    if not form.is_valid():    
-      print(form)
-      context = {"form": form}
-      return render(request, 'glyph.jade', context)
-    tags = form.cleaned_data["tags"]
-    glyph = form.save(commit=False)
-    glyph.uploader = request.user
-    glyph.save()
-    for tag in tags:
-      glyph.tags.add(tag)
+    print(request.FILES)
+    print(request.FILES["svg"])
+    print(type(request.FILES["svg"]))
+    print(type([]))
+    print("--------")
+
+    filelist =  request.FILES.getlist("svg")
+    for item in filelist:
+      f = {"svg": item}
+      form = forms.GlyphForm(request.POST, f)
+      print("Glyph Post")
+      if not form.is_valid():    
+        print(form)
+        context = {"form": form}
+        return render(request, 'glyph.jade', context)
+      tags = form.cleaned_data["tags"]
+      glyph = form.save(commit=False)
+      glyph.uploader = request.user
+      glyph.save()
+      for tag in tags:
+        glyph.tags.add(tag)
+
     return redirect("/")
 
 class Glyph2View(TemplateView):

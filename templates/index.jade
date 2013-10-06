@@ -13,7 +13,7 @@ html
       | {% verbatim %}
       div(style="display: inline-block;")
         .ico-li#iconset
-          .ico-li-it(ng-show="iconset.list.length==0)
+          .ico-li-it(ng-show="iconset.list.length==0")
             icon(src="default/login.svg")")
             .name login now to
             br
@@ -54,13 +54,14 @@ html
         icon(src="{{g.svg}}",del="iconset.cur.del(e,g)")
       | {% endverbatim %}
     | {% include 'glyph-modal.jade' %}
+    | {% include 'glyph-detail.jade' %}
     | {% include 'license-modal.jade' %}
     | {% verbatim %}
-    .ico-li.small(ng-show="!iconset.detail")
-      .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)")
+    .ico-li.small.all(ng-show="!iconset.detail")
+      .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)",ng-class="{true:'added',false:''}[g.added]")
         icon.ico-main(src="{{g.svg}}")")
-    .ico-li(ng-show="iconset.detail")
-      .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)")
+    .ico-li.all(ng-show="iconset.detail")
+      .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)",ng-class="{true:'added',false:''}[g.added]")
         .icons
           icon.ico-main(src="{{g.svg}}")")
           .ib
@@ -79,6 +80,10 @@ html
               a(href="{{g.license_url}}#") {{g.license}}
           .tags
             .tag(ng-repeat="t in g.tags") {{t}}
+          .action
+            button.btn.btn-success.btn-sm.detail(ng-show="!g.added") Add
+            button.btn.btn-danger.btn-sm.detail(ng-show="g.added") Remove
+            button.btn.btn-primary.btn-sm.detail(ng-click="detail.show($event,g);") Detail
         | {% endverbatim %}
     #footer
       | 愛 Aicon

@@ -55,6 +55,13 @@ main = function($scope, $http){
     name: ""
   };
   $scope.searchKeyword = "";
+  $scope.detail = {};
+  $scope.detail.show = function(e, s){
+    this.cur = s;
+    console.log(s.tags, s.license);
+    e.stopPropagation();
+    return $('#glyph-detail').modal('show');
+  };
   $scope.iconset.del = function(e, s){
     var this$ = this;
     return $http['delete']("/iconset/" + s.pk).success(function(d){
@@ -65,10 +72,14 @@ main = function($scope, $http){
     });
   };
   $scope.iconset.cur.add = function(g){
-    if (!$scope.iconset.cur.icons.filter(function(it){
+    if (!this.icons.filter(function(it){
       return parseInt(it.pk) === parseInt(g.pk);
     }).length) {
-      return $scope.iconset.cur.icons.push(g);
+      g.added = true;
+      return this.icons.push(g);
+    } else {
+      this.icons.splice(this.icons.indexOf(g), 1);
+      return g.added = false;
     }
   };
   $scope.iconset.cur.del = function(e, g){
@@ -81,7 +92,8 @@ main = function($scope, $http){
     console.log($scope.searchKeyword);
     return $http.get('/glyph/', {
       params: {
-        q: $scope.searchKeyword
+        q: $scope.searchKeyword,
+        page_limit: 100
       }
     }).success(function(d){
       return $scope.glyphs = d.data;
