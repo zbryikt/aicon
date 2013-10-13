@@ -14,10 +14,10 @@ html
       div(style="display: inline-block;")
         .ico-li#iconset
           .ico-li-it(ng-show="iconset.list.length==0")
-            icon(src="default/login.svg")")
+            icon(src="default/login.svg")
             .name login now to
             br
-            .count make your iconset
+            .count save your iconset!
 
           .ico-li-it(ng-repeat="s in iconset.list",ng-click="iconset.cur.set(s)")
             icon(src="{{s.cover}}",del="iconset.del(e,s)")
@@ -32,7 +32,8 @@ html
         i.glyphicon.glyphicon-edit(onclick="$('#iconset-name').focus();")
         button.btn.btn-link(ng-click="buildFont()") 建立字型
         button.btn.btn-link(ng-click="iconset.cur.save()") 儲存快選單
-        button.btn.btn-link(data-toggle="modal",href="#glyph-uploader") 上傳圖示
+        button.btn.btn-link(ng-click="glyphUpload.show()") 上傳圖示
+        //-button.btn.btn-link(data-toggle="modal",href="#glyph-uploader") 上傳圖示
       input.form-control(style="height: 30px;vertical-align:baseline;display:inline-block;width: 300px",type="text",ng-model="searchKeyword",placeholder="搜尋圖示...")
       span#menu-func
         i.glyphicon.glyphicon-th(ng-click="iconset.detail=false",ng-class="{true:'',false:'sel'}[iconset.detail]")
@@ -58,17 +59,18 @@ html
     | {% verbatim %}
     .ico-li.small.all(ng-show="!iconset.detail")
       .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
-        icon.ico-main(src="{{g.svg}}")")
+        icon.ico-main(src="{{g.svg}}")
     .ico-li.all(ng-show="iconset.detail")
       .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)",ng-class="{true:'added',false:''}[g.added]")
         .icons
-          icon.ico-main(src="{{g.svg}}")")
-          .ib
-            icon.ico1(src="{{g.svg}}")")
-            icon.ico2(src="{{g.svg}}")")
-            br
-            icon.ico3(src="{{g.svg}}")")
-            icon.ico4(src="{{g.svg}}")")
+          icon.ico-main(src="{{g.svg}}")
+          //-
+            .ib
+              icon.ico1(src="{{g.svg}}")
+              icon.ico2(src="{{g.svg}}")
+              br
+              icon.ico3(src="{{g.svg}}")
+              icon.ico4(src="{{g.svg}}")
         .infos
           .text
             .name {{g.name}}

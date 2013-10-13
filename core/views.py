@@ -8,6 +8,7 @@ from main import settings
 from utils import utils
 from django.core import serializers
 from taggit.models import Tag
+from django.forms.formsets import formset_factory
 import fontforge, os, random, glob, zipfile, StringIO, os.path, json
 
 KERNING = 0
@@ -95,7 +96,32 @@ class GlyphView(utils.RestView):
     print(type([]))
     print("--------")
 
+    if 'form-0-name' in request.POST:
+      print("updating glyph info")
+      GFS = formset_factory(forms.GlyphEditForm)
+      formset = GFS(request.POST, request.FILES)
+      print("=========")
+      count = 0
+      finished = []
+      for form in formset:
+        if not form.is_valid(): continue
+        try:
+          pk = int(request.POST["form-%d-id"%count])
+          glyph = Glyph.objects.get(pk=pk)
+        except: continue
+        glyph.name = form.cleaned_data["name"]
+        glyph.author = form.cleaned_data["author"]
+        glyph.author_url = form.cleaned_data["author_url"]
+        glyph.license = form.cleaned_data["license"]
+        for tag in form.cleaned_data["tags"]:
+          glyph.tags.add(tag)
+        glyph.save()
+        count+=1
+        finished += [pk]
+      return HttpResponse(utils.enjson(finished))
+
     filelist =  request.FILES.getlist("svg")
+    pks = []
     for item in filelist:
       f = {"svg": item}
       form = forms.GlyphForm(request.POST, f)
@@ -108,10 +134,11 @@ class GlyphView(utils.RestView):
       glyph = form.save(commit=False)
       glyph.uploader = request.user
       glyph.save()
+      pks += [glyph.pk]
       for tag in tags:
         glyph.tags.add(tag)
 
-    return redirect("/")
+    return HttpResponse(utils.enjson(pks))
 
 class Glyph2View(TemplateView):
   def post(self, request, *args, **kwargs):
@@ -171,6 +198,7 @@ class IconsetView(utils.RestView):
   order_by = "-create_date"
 
   def delete(self, request, *args, **kwargs):
+    if not request.user.is_authenticated(): return HttpResponse([])
     try: 
       id = int(kwargs["id"])
       iconset = Iconset.objects.get(pk=id)
@@ -179,6 +207,7 @@ class IconsetView(utils.RestView):
     return HttpResponse("[0]")
 
   def get(self, request, *args, **kwargs):
+    if not request.user.is_authenticated(): return HttpResponse([])
     try: id = int(kwargs.get("id")) or -1
     except: id = 0
     try: iconset = [Iconset.objects.get(pk=id)]
@@ -193,6 +222,7 @@ class IconsetView(utils.RestView):
     return HttpResponse(json.dumps(ret))
 
   def post(self, request, *args, **kwargs):
+    if not request.user.is_authenticated(): return HttpResponse([])
     try: data = json.loads(request.body)
     except: data = {"icons": [], "name": "", "pk": -1}
     d_gs = {}

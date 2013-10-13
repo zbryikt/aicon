@@ -6,6 +6,11 @@ class GlyphForm(forms.ModelForm):
     model = Glyph
     fields = ["svg", "name", "author", "license", "author_url", "license_url", "tags"]
 
+class GlyphEditForm(forms.ModelForm):
+  class Meta:
+    model = Glyph
+    fields = ["name", "author", "license", "author_url", "license_url", "tags"]
+
 class LicenseForm(forms.ModelForm):
   class Meta:
     model = License

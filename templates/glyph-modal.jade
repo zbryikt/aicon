@@ -6,42 +6,86 @@ form#glyph-form(enctype="multipart/form-data",method="post",target="glyph-form-p
     .modal-header
       button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
       h4.modal-title Upload Icon
-    .modal-body: .row
-      .col-sm-5
-        .upload
-          i.glyphicon.glyphicon-upload
-          .name(style="font-size:12px") {{glyph.new.svg}}
-        input#glyph-uploader-svg(type="file",multiple,name="svg",onchange="angular.element(this).scope().glyph.new.setSvg(this)")
-      .col-sm-7
-        .form
-          .form-row
-            .form-label
-              | Icon Name
-              i.required
-            .form-input: input(type="text",name="name", placeholder="Icon Name",ng-model="glyph.new.name")
-          .form-row
-            .form-label
-              | Author Name
-              i.required
-            .form-input: input(type="text",name="author", placeholder="Author",ng-model="glyph.new.author")
-          .form-row
-            .form-label Author URL
-            .form-input: input(type="text",name="author_url", placeholder="URL to Author",ng-model="glyph.new.author_url")
-          .form-row
-            .form-label
-              | License
-              i.required
-            .form-input
-              input.license-chooser(name="license",ng-model="glyph.new.license")
-                option
-                option(ng-repeat="it in lic.list",value="{{it.pk}}") {{it.fields.name}}
-              i.glyphicon.glyphicon-plus(data-toggle="modal",href="#lic-uploader")
-        small(style="display:block;margin:0 0 7px 0;background: #eee;padding:3px 13px") tags
-        input.tags(type="hidden",name="tags")
-      | (
-      i.required
-      | : required )
+    .modal-body
+      .single.row
+
+        .col-sm-5
+          .upload
+            i.glyphicon.glyphicon-upload
+            .name(style="font-size:12px") {{glyph.new.svg}}
+          input#glyph-uploader-svg(type="file",multiple,name="svg",onchange="angular.element(this).scope().glyph.new.setSvg(this)")
+        .col-sm-7
+          .form
+            .form-row
+              .form-label
+                | Icon Name
+                i.required
+              .form-input: input(type="text",name="name", placeholder="Icon Name",ng-model="glyph.new.name")
+            .form-row
+              .form-label
+                | Author Name
+                i.required
+              .form-input: input(type="text",name="author", placeholder="Author",ng-model="glyph.new.author")
+            .form-row
+              .form-label Author URL
+              .form-input: input(type="text",name="author_url", placeholder="URL to Author",ng-model="glyph.new.author_url")
+            .form-row
+              .form-label
+                | License
+                i.required
+              .form-input
+                license(ng-model="glyph.new.license",name="license")
+                i.glyphicon.glyphicon-plus(data-toggle="modal",href="#lic-uploader")
+          small(style="display:block;margin:0 0 7px 0;background: #eee;padding:3px 13px") tags
+          tags(ng-model="glyph.new.tags", name="tags")
+        | (
+        i.required
+        | : required )
+      .multiple
+        .bypass
+          | Please give more details about them ( or just
+          a.action(href="#") bypass it
+          |  )
+        input(type="hidden",name="form-TOTAL_FORMS",value="{{newFiles.data.length}}")
+        input(type="hidden",name="form-INITIAL_FORMS",value="0")
+        input(type="hidden",name="form-MIN_NUM_FORMS",value="2")
+        input(type="hidden",name="form-MAX_NUM_FORMS",value="{{newFiles.data.length}}")
+        .row(ng-repeat="nf in newFiles.data")
+          .col-sm-5
+            .upload
+              icon(src="{{nf.svg}}")
+              input(type="hidden",name="form-{{$index}}-id",value="{{nf.id}}")
+              input(type="hidden",name="form-{{$index}}-svg",value="{{nf.svg}}")
+          .col-sm-7
+            .form
+              .form-row
+                .form-label
+                  | Icon Name
+                  i.required
+                .form-input: input(type="text",name="form-{{$index}}-name", placeholder="Icon Name",ng-model="nf.name")
+              .form-row
+                .form-label
+                  | Author Name
+                  i.required
+                .form-input: input(type="text",name="form-{{$index}}-author", placeholder="Author",ng-model="nf.author")
+              .form-row
+                .form-label Author URL
+                .form-input: input(type="text",name="form-{{$index}}-author_url", placeholder="URL to Author",ng-model="nf.author_url")
+              .form-row
+                .form-label
+                  | License
+                  i.required
+                .form-input
+                  license(ng-model="nf.license",name="form-{{$index}}-license")
+                  i.glyphicon.glyphicon-plus(data-toggle="modal",href="#lic-uploader")
+            small tags
+            tags(ng-model="nf.tags", name="form-{{$index}}-tags")
+
     .modal-footer
-      button.btn.btn-primary(ng-click="glyph.add()") Upload
-      button.btn.btn-default(data-dismiss="modal") Cancel
+      .single
+        button.btn.btn-primary(ng-click="glyph.add()") Upload
+        button.btn.btn-default(data-dismiss="modal") Cancel
+      .multiple
+        button.btn.btn-primary(ng-click="newFiles.save()") Save
+        button.btn.btn-default(data-dismiss="modal") Skip
   | {% endverbatim %}
