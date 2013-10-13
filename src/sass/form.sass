@@ -21,7 +21,7 @@
   .ps
     margin: 0
     font-size: 13px
-#glyph-uploader, #glyph-detail
+#glyph-new-modal, #glyph-detail
   input[type=file]
     position: absolute
     width: 200px
@@ -81,3 +81,10 @@
     right: 0px
     margin-left:  5px
     color: #090
+
+.invalid input
+  outline: 1px solid #f00
+  box-shadow: 0 0 8px rgba(255,0,0,0.9)
+.invalid .select2-choice, .invalid-self.invalid
+  border: 1px solid #f00
+  box-shadow: 0 0 5px rgba(255,0,0,0.9)

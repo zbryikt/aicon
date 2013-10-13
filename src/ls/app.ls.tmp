@@ -15,7 +15,7 @@ angular.module \main, <[ui.select2]>
         createSearchChoice: (term,data) ->
           if data.filter(-> (it.text.locale-compare term)==0).length==0 => return {id:term, text:term}
       .on \change (e) -> scope.$apply -> scope.model = $ element .select2 \data
-      scope.$watch \model (v) -> $ element .select2 \data,  v
+      scope.$watch \model (v) -> if v => $ element .select2 \data,  v
 
 .directive \license ($compile) ->
   return 
@@ -43,7 +43,7 @@ angular.module \main, <[ui.select2]>
         id: (e) -> e.fields and "#{e.pk}" or ""
         escapeMarkup: -> it
       .on \change (e) -> scope.$apply -> scope.model = $ element .select2 \data
-      scope.$watch \model (v) -> $ element .select2 \data,  v
+      scope.$watch \model (v) -> if v => $ element .select2 \data,  v
       
 .directive \icon, ($compile)->
   return
@@ -132,92 +132,79 @@ main = ($scope, $http) ->
       #console.log ( $ \#lic-form-pxy .contents!0.body.innerText )
     $ \#lic-form .submit!
 
+  $scope.glyph = {new: {}}
+    new: 
+      name:       { valid: false, value: "" }
+      author:     { valid: false, value: "" }
+      author_url: { valid: true,  value: "" }
+      license:    { valid: false, value: "" }
+      tags:       { valid: false, value: "" }
+      svg:        
+        valid: false
+        value: ""
+        set: -> $scope.$apply -> $scope.glyph.new.svg = $(it)val!
 
+  $scope.glyph.new.set-svg = ->
+    # check if it has multiple files: document.getElementById \glyph-uploader-svg .files
+    #$scope.glyph.new.svg = $(it)val!
+    #$scope.$apply!
+
+  glyph-form-handler = null
+  glyph-form-handler-step1 = ->
+    console.log "step1..."
+    pks = JSON.parse($ \#glyph-form-pxy .contents!find \body .html!)
+    console.log "pks: ",pks
+    f = document.getElementById \glyph-uploader-svg .files
+    if f.length==1
+      $ \#glyph-uploader .modal \hide
+      return $scope.search!
+    # for working in main frame
+    angular.element \#glyph-uploader .scope!$apply ->
+      $scope.new-files.data = for x,i in f =>
+        id: pks[i]
+        svg: "svg/#{x.name}"
+        name: $scope.glyph.new.name
+        author: $scope.glyph.new.author
+        author_url: $scope.glyph.new.author_url
+        license: $scope.glyph.new.license
+        tags: $scope.glyph.new.tags
+    $ "\#glyph-uploader .multiple" .show!
+    $ "\#glyph-uploader .single" .hide!
+
+  glyph-form-handler-step2 = ->
+    pks = JSON.parse($ \#glyph-form-pxy .contents!find \body .html!)
+    if pks.length == $scope.new-files.data.length =>
+      $ \#glyph-uploader .modal \hide
+      return $scope.search!
+    ret = []
+    for it in $scope.new-files.data
+      if !(it.id in pks) => ret.push it
+    $scope.$apply -> $scope.new-files.data = ret
+
+  $scope.new-files = 
+    data: []
+    save: ->
+      #TODO: do form validation
+      glyph-form-handler := glyph-form-handler-step2
+      $ \#glyph-form-pxy .load -> glyph-form-handler!
+      $ \#glyph-form .submit!
+
+  $scope.glyph.add = ->
+    if [[k,$scope.glyph.new[k]] for k of $scope.glyph.new{name,author,license,tags}]filter(->!it.1).length<4 => return
+    if not ( $ \#glyph-uploader-svg .val! ) => return
+    #if not $scope.glyph.new.name => return #TODO: check if angular support validation
+    glyph-form-handler := glyph-form-handler-step1
+    $ \#glyph-form-pxy .load -> glyph-form-handler!
+
+    $ \#glyph-form .submit!
+    
   $scope.tag.load = ->
     $http.get \/tag/ .success (d) -> $scope.tag.list = d.data
-
-  ########## for uploading glyph #########
-  $scope.glyph = 
-    # handler after uploading glyph
-    h:
-      init: ->
-        $ \#glyph-new-form-pxy .load ~> @proxy!
-        @init = ->
-      proxy: -> @main!
-      main: null
-      set: -> 
-        @init!
-        @main = it
-
-    # short-cut for glyph.item
-    n: null 
-    init: ->
-      @list.data = []
-      @n = @item.data = $.extend true, {}, {} <<< @init-data
-      $ \#glyph-new-modal .modal \show
-        ..find \.single .show!
-        ..find \.multiple .hide!
-    list:
-      data: []
-      save: ->
-        len = 0
-        console.log "todo: some how multi-editing form checking is not working. please check"
-        for d in @data
-          len += (for k of d{name,author,license,tags} =>
-            #!d[k].p = if !d[k].v => false else true
-          )filter(->it).length
-        if len>0 => return
-        $scope.glyph.h.set @callback
-        $ \#glyph-new-form .submit!
-      callback: ->
-        pks = JSON.parse($ \#glyph-new-form-pxy .contents!find \body .html!)
-        console.log "pks: ",pks
-        if pks.length == $scope.glyph.list.data.length =>
-          $ \#glyph-new-modal .modal \hide
-          return $scope.search!
-        else $ '#glyph-new-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
-        #ret = []
-        #for it in $scope.new.list.data
-        #  if !(it.id in pks) => ret.push it
-        #$scope.$apply -> $scope.glyph.list.data = ret
-        $scope.$apply ~> $scope.glyph.list.data = $scope.glyph.list.data.filter -> !(it.id in pks)
-    item:
-      data: {}
-      save: ->
-        if (for k of @data{name,author,license,tags} =>
-          !@data[k].p = if !@data[k].v => false else true
-        )filter(->it).length>0 => return
-        if not ( $ \#glyph-new-svg .val! ) => return @data.svg.p = false
-        $scope.glyph.h.set @callback
-        $ \#glyph-new-form .submit!
-      callback: ->
-        pks = JSON.parse($ \#glyph-new-form-pxy .contents!find \body .html!)
-        if pks.length==0 => return $ '#glyph-new-modal .error-hint.error' .show!delay 2000 .fadeOut 1000
-        f = document.getElementById \glyph-new-svg .files
-        if f.length==1
-          $ \#glyph-new-modal .modal \hide
-          return $scope.search!
-        # for working in main frame
-        angular.element \#glyph-new-modal .scope!$apply ->
-          $scope.glyph.list.data = for x,i in f =>
-            $.extend true, {}, {id: pks[i], svg: "svg/#{x.name}"} <<< $scope.glyph.item.data{name,author,author_url,license,tags}
-        $ "\#glyph-new-modal .multiple" .show!
-        $ "\#glyph-new-modal .single" .hide!
-    init-data:
-      # p: check passed / v: value
-      name:       { p: true, v: "" }
-      author:     { p: true, v: "" }
-      author_url: { p: true, v: "" }
-      license:    { p: true, v: "" }
-      tags:       { p: true, v: "" }
-      svg:        
-        p: true
-        v: "(no file selected)"
-        set: (v) -> $scope.$apply ~> 
-          f = [x.name for x in document.getElementById \glyph-new-svg .files]
-          @v = if f.length > 1 => "#{f.0}\n... (#{f.length} files)"
-               else if f.length==1 => "#{f.0}"
-               else "(no file selected)"
+  $scope.glyph-upload =
+    show: -> $ \#glyph-uploader .modal \show
+      ..find \.single .show!
+      ..find \.multiple .hide!
+    
 
   $scope.lic.load!
   $scope.iconset.load!

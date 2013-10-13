@@ -32,7 +32,7 @@ html
         i.glyphicon.glyphicon-edit(onclick="$('#iconset-name').focus();")
         button.btn.btn-link(ng-click="buildFont()") 建立字型
         button.btn.btn-link(ng-click="iconset.cur.save()") 儲存快選單
-        button.btn.btn-link(ng-click="glyphUpload.show()") 上傳圖示
+        button.btn.btn-link(ng-click="glyph.init()") 上傳圖示
         //-button.btn.btn-link(data-toggle="modal",href="#glyph-uploader") 上傳圖示
       input.form-control(style="height: 30px;vertical-align:baseline;display:inline-block;width: 300px",type="text",ng-model="searchKeyword",placeholder="搜尋圖示...")
       span#menu-func

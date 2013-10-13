@@ -88,21 +88,10 @@ class GlyphView(utils.RestView):
   wrapper = Glyph.Wrapper
 
   def post(self, request, *args, **kwargs):
-    print("--------")
-    print(request.POST)
-    print(request.FILES)
-    print(request.FILES["svg"])
-    print(type(request.FILES["svg"]))
-    print(type([]))
-    print("--------")
-
     if 'form-0-name' in request.POST:
-      print("updating glyph info")
       GFS = formset_factory(forms.GlyphEditForm)
       formset = GFS(request.POST, request.FILES)
-      print("=========")
-      count = 0
-      finished = []
+      count,finished = 0, []
       for form in formset:
         if not form.is_valid(): continue
         try:
@@ -125,11 +114,9 @@ class GlyphView(utils.RestView):
     for item in filelist:
       f = {"svg": item}
       form = forms.GlyphForm(request.POST, f)
-      print("Glyph Post")
       if not form.is_valid():    
-        print(form)
         context = {"form": form}
-        return render(request, 'glyph.jade', context)
+        return Httpresponse(utils.enjson([]))
       tags = form.cleaned_data["tags"]
       glyph = form.save(commit=False)
       glyph.uploader = request.user

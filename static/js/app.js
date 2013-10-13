@@ -32,9 +32,7 @@ angular.module('main', ['ui.select2']).config(function($httpProvider){
         });
       });
       return scope.$watch('model', function(v){
-        if (v) {
-          return $(element).select2('data', v);
-        }
+        return $(element).select2('data', v);
       });
     }
   };
@@ -98,9 +96,7 @@ angular.module('main', ['ui.select2']).config(function($httpProvider){
         });
       });
       return scope.$watch('model', function(v){
-        if (v) {
-          return $(element).select2('data', v);
-        }
+        return $(element).select2('data', v);
       });
     }
   };
@@ -129,7 +125,6 @@ angular.module('main', ['ui.select2']).config(function($httpProvider){
   };
 });
 main = function($scope, $http){
-  var glyphFormHandler, glyphFormHandlerStep1, glyphFormHandlerStep2;
   $scope.glyphs = [];
   $scope.tag = {
     list: []
@@ -144,9 +139,6 @@ main = function($scope, $http){
     nd: false,
     nc: false,
     file: null
-  };
-  $scope.glyph = {
-    'new': {}
   };
   $scope.iconset = {
     list: [],
@@ -269,104 +261,191 @@ main = function($scope, $http){
     });
     return $('#lic-form').submit();
   };
-  $scope.glyph['new'].setSvg = function(it){
-    $scope.glyph['new'].svg = $(it).val();
-    return $scope.$apply();
-  };
-  glyphFormHandler = null;
-  glyphFormHandlerStep1 = function(){
-    var pks, f;
-    console.log("step1...");
-    pks = JSON.parse($('#glyph-form-pxy').contents().find('body').html());
-    console.log("pks: ", pks);
-    f = document.getElementById('glyph-uploader-svg').files;
-    if (f.length === 1) {
-      $('#glyph-uploader').modal('hide');
-      return $scope.search();
-    }
-    angular.element('#glyph-uploader').scope().$apply(function(){
-      var i, x;
-      return $scope.newFiles.data = (function(){
-        var i$, ref$, len$, results$ = [];
-        for (i$ = 0, len$ = (ref$ = f).length; i$ < len$; ++i$) {
-          i = i$;
-          x = ref$[i$];
-          results$.push({
-            id: pks[i],
-            svg: "svg/" + x.name,
-            name: $scope.glyph['new'].name,
-            author: $scope.glyph['new'].author,
-            author_url: $scope.glyph['new'].author_url,
-            license: $scope.glyph['new'].license,
-            tags: $scope.glyph['new'].tags
-          });
-        }
-        return results$;
-      }());
-    });
-    $("#glyph-uploader .multiple").show();
-    return $("#glyph-uploader .single").hide();
-  };
-  glyphFormHandlerStep2 = function(it){
-    var pks, ret, i$, ref$, len$;
-    console.log("multi edit submiited");
-    pks = JSON.parse($('#glyph-form-pxy').contents().find('body').html());
-    console.log("saved pk: ", pks);
-    if (pks.length === $scope.newFiles.data.length) {
-      $('#glyph-uploader').modal('hide');
-      return $scope.search();
-    }
-    console.log($scope.newFiles.data);
-    ret = [];
-    for (i$ = 0, len$ = (ref$ = $scope.newFiles.data).length; i$ < len$; ++i$) {
-      it = ref$[i$];
-      if (!in$(it.id, pks)) {
-        ret.push(it);
-      }
-    }
-    $scope.newFiles.data = ret;
-    console.log($scope.newFiles.data);
-    return $scope.$apply();
-  };
-  $scope.newFiles = {
-    data: [],
-    save: function(){
-      console.log("todo");
-      glyphFormHandler = glyphFormHandlerStep2;
-      $('#glyph-form-pxy').load(function(){
-        return glyphFormHandler();
-      });
-      return $('#glyph-form').submit();
-    }
-  };
-  $scope.glyph.add = function(){
-    console.log('adding...');
-    if (!$scope.glyph['new'].name) {
-      return;
-    }
-    if (!$('#glyph-uploader-svg').val()) {
-      return;
-    }
-    glyphFormHandler = glyphFormHandlerStep1;
-    $('#glyph-form-pxy').load(function(){
-      return glyphFormHandler();
-    });
-    return $('#glyph-form').submit();
-  };
   $scope.tag.load = function(){
     return $http.get('/tag/').success(function(d){
       return $scope.tag.list = d.data;
     });
   };
-  $scope.glyphUpload = {};
-  $scope.glyphUpload.show = function(){
-    $('#glyph-uploader').modal('show');
-    $("#glyph-uploader .single").show();
-    return $("#glyph-uploader .multiple").hide();
+  $scope.glyph = {
+    h: {
+      init: function(){
+        var this$ = this;
+        $('#glyph-new-form-pxy').load(function(){
+          return this$.proxy();
+        });
+        return this.init = function(){};
+      },
+      proxy: function(){
+        return this.main();
+      },
+      main: null,
+      set: function(it){
+        this.init();
+        return this.main = it;
+      }
+    },
+    n: null,
+    init: function(){
+      var x$;
+      this.list.data = [];
+      this.n = this.item.data = $.extend(true, {}, import$({}, this.initData));
+      x$ = $('#glyph-new-modal').modal('show');
+      x$.find('.single').show();
+      x$.find('.multiple').hide();
+      return x$;
+    },
+    list: {
+      data: [],
+      save: function(){
+        var len, i$, ref$, len$, d, k;
+        len = 0;
+        console.log("todo: some how multi-editing form checking is not working. please check");
+        for (i$ = 0, len$ = (ref$ = this.data).length; i$ < len$; ++i$) {
+          d = ref$[i$];
+          len += (fn$()).filter(fn1$).length;
+        }
+        if (len > 0) {
+          return;
+        }
+        $scope.glyph.h.set(this.callback);
+        return $('#glyph-new-form').submit();
+        function fn$(){
+          var results$ = [];
+          for (k in {
+            name: d.name,
+            author: d.author,
+            license: d.license,
+            tags: d.tags
+          }) {}
+          return results$;
+        }
+        function fn1$(it){
+          return it;
+        }
+      },
+      callback: function(){
+        var pks, this$ = this;
+        pks = JSON.parse($('#glyph-new-form-pxy').contents().find('body').html());
+        console.log("pks: ", pks);
+        if (pks.length === $scope.glyph.list.data.length) {
+          $('#glyph-new-modal').modal('hide');
+          return $scope.search();
+        } else {
+          $('#glyph-new-modal .error-hint.missed').show().delay(2000).fadeOut(1000);
+        }
+        return $scope.$apply(function(){
+          return $scope.glyph.list.data = $scope.glyph.list.data.filter(function(it){
+            return !in$(it.id, pks);
+          });
+        });
+      }
+    },
+    item: {
+      data: {},
+      save: function(){
+        var k;
+        if ((function(){
+          var ref$, results$ = [];
+          for (k in {
+            name: (ref$ = this.data).name,
+            author: ref$.author,
+            license: ref$.license,
+            tags: ref$.tags
+          }) {
+            results$.push(!(this.data[k].p = !this.data[k].v ? false : true));
+          }
+          return results$;
+        }.call(this)).filter(function(it){
+          return it;
+        }).length > 0) {
+          return;
+        }
+        if (!$('#glyph-new-svg').val()) {
+          return this.data.svg.p = false;
+        }
+        $scope.glyph.h.set(this.callback);
+        return $('#glyph-new-form').submit();
+      },
+      callback: function(){
+        var pks, f;
+        pks = JSON.parse($('#glyph-new-form-pxy').contents().find('body').html());
+        if (pks.length === 0) {
+          return $('#glyph-new-modal .error-hint.error').show().delay(2000).fadeOut(1000);
+        }
+        f = document.getElementById('glyph-new-svg').files;
+        if (f.length === 1) {
+          $('#glyph-new-modal').modal('hide');
+          return $scope.search();
+        }
+        angular.element('#glyph-new-modal').scope().$apply(function(){
+          var i, x;
+          return $scope.glyph.list.data = (function(){
+            var i$, ref$, len$, ref1$, ref2$, results$ = [];
+            for (i$ = 0, len$ = (ref$ = f).length; i$ < len$; ++i$) {
+              i = i$;
+              x = ref$[i$];
+              results$.push($.extend(true, {}, (ref2$ = {
+                id: pks[i],
+                svg: "svg/" + x.name
+              }, ref2$.name = (ref1$ = $scope.glyph.item.data).name, ref2$.author = ref1$.author, ref2$.author_url = ref1$.author_url, ref2$.license = ref1$.license, ref2$.tags = ref1$.tags, ref2$)));
+            }
+            return results$;
+          }());
+        });
+        $("#glyph-new-modal .multiple").show();
+        return $("#glyph-new-modal .single").hide();
+      }
+    },
+    initData: {
+      name: {
+        p: true,
+        v: ""
+      },
+      author: {
+        p: true,
+        v: ""
+      },
+      author_url: {
+        p: true,
+        v: ""
+      },
+      license: {
+        p: true,
+        v: ""
+      },
+      tags: {
+        p: true,
+        v: ""
+      },
+      svg: {
+        p: true,
+        v: "(no file selected)",
+        set: function(v){
+          var this$ = this;
+          return $scope.$apply(function(){
+            var f, res$, i$, ref$, len$, x;
+            res$ = [];
+            for (i$ = 0, len$ = (ref$ = document.getElementById('glyph-new-svg').files).length; i$ < len$; ++i$) {
+              x = ref$[i$];
+              res$.push(x.name);
+            }
+            f = res$;
+            return this$.v = f.length > 1
+              ? f[0] + "\n... (" + f.length + " files)"
+              : f.length === 1 ? f[0] + "" : "(no file selected)";
+          });
+        }
+      }
+    }
   };
   $scope.lic.load();
   return $scope.iconset.load();
 };
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}
 function in$(x, xs){
   var i = -1, l = xs.length >>> 0;
   while (++i < l) if (x === xs[i]) return true;
