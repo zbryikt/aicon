@@ -194,7 +194,7 @@ class IconsetView(utils.RestView):
     return HttpResponse("[0]")
 
   def get(self, request, *args, **kwargs):
-    if not request.user.is_authenticated(): return HttpResponse([])
+    if not request.user.is_authenticated(): return HttpResponse(json.dumps([]))
     try: id = int(kwargs.get("id")) or -1
     except: id = 0
     try: iconset = [Iconset.objects.get(pk=id)]
@@ -202,14 +202,15 @@ class IconsetView(utils.RestView):
     ret = []
     for s in iconset:
       obj = {"name": s.name, "pk": s.pk, "icons": [], "cover": "svg/default.svg"}
-      choices = Choice.objects.filter(iconset__pk=s.pk)
-      obj["icons"] = [{"pk": x.glyph.pk, "name": x.glyph.name, "svg": str(x.glyph.svg)} for x in choices]
-      if len(choices)>0: obj["cover"] = str(choices[0].glyph.svg)
+      glyphs = [x.glyph for x in Choice.objects.filter(iconset__pk=s.pk)]
+      obj["icons"] = glyphs # Glyph.Wrapper('json', glyphs)
+      #obj["icons"] = [{"pk": x.glyph.pk, "name": x.glyph.name, "svg": str(x.svg)} for x in glyphs]
+      if len(glyphs)>0: obj["cover"] = str(glyphs[0].svg)
       ret += [obj]
-    return HttpResponse(json.dumps(ret))
+    return HttpResponse(utils.enjson(ret)) #json.dumps(ret))
 
   def post(self, request, *args, **kwargs):
-    if not request.user.is_authenticated(): return HttpResponse([])
+    if not request.user.is_authenticated(): return HttpResponse("[]")
     try: data = json.loads(request.body)
     except: data = {"icons": [], "name": "", "pk": -1}
     d_gs = {}
@@ -218,6 +219,7 @@ class IconsetView(utils.RestView):
     for g in gs: d_gs[g.pk] = g
     k_gs = d_gs.keys()
     data["icons"] = filter(lambda x: x in k_gs, data["icons"])
+    print(len(data.get("icons") or[]))
     if len(data.get("icons") or [])==0: return HttpResponse("[]")
     print("pk: %d"%data.get("pk"))
     try: iconset = Iconset.objects.get(pk=(data.get("pk") or -1))
@@ -229,7 +231,11 @@ class IconsetView(utils.RestView):
       if len(c): continue
       c = Choice.objects.create(glyph=d_gs[gpk], iconset=iconset)
       c.save()
-    return HttpResponse('["ok"]')
+    # todo: remove
+    cs = Choice.objects.filter(Q(iconset=iconset))
+    for c in cs:
+      if not (c.glyph.pk in data["icons"]): c.delete()
+    return HttpResponse(utils.enjson(data))
 
 class TagView(utils.RestView):
   des_model = Tag

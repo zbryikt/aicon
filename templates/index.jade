@@ -13,31 +13,31 @@ html
       | {% verbatim %}
       div(style="display: inline-block;")
         .ico-li#iconset
-          .ico-li-it(ng-show="iconset.list.length==0")
+          .ico-li-it(ng-show="!st.sets.len")
             icon(src="default/login.svg")
             .name login now to
             br
             .count save your iconset!
 
-          .ico-li-it(ng-repeat="s in iconset.list",ng-click="iconset.cur.set(s)")
-            icon(src="{{s.cover}}",del="iconset.del(e,s)")
+          .ico-li-it(ng-repeat="s in st.sets",ng-click="st.load(s)",ng-class="{true:'active',false:''}[st.cur.pk==s.pk]")
+            icon(src="{{s.cover}}",del="st.rmset(e,s)")
             .name {{s.name}}
             br
             .count {{s.icons.length}} icons
       | {% endverbatim %}
 
     #menu-bar
-      input#iconset-name(type="text",value="圖示集", placeholder="(圖示集的名稱)",ng-model="iconset.cur.name")
+      input#iconset-name(type="text",value="圖示集", placeholder="(圖示集的名稱)",ng-model="st.name")
       span(style="font-weight:900;font-size: 18px")
         i.glyphicon.glyphicon-edit(onclick="$('#iconset-name').focus();")
         button.btn.btn-link(ng-click="buildFont()") 建立字型
-        button.btn.btn-link(ng-click="iconset.cur.save()") 儲存快選單
+        button.btn.btn-link(ng-click="st.save()") 儲存快選單
         button.btn.btn-link(ng-click="glyph.init()") 上傳圖示
         //-button.btn.btn-link(data-toggle="modal",href="#glyph-uploader") 上傳圖示
       input.form-control(style="height: 30px;vertical-align:baseline;display:inline-block;width: 300px",type="text",ng-model="searchKeyword",placeholder="搜尋圖示...")
       span#menu-func
-        i.glyphicon.glyphicon-th(ng-click="iconset.detail=false",ng-class="{true:'',false:'sel'}[iconset.detail]")
-        i.glyphicon.glyphicon-th-large(ng-click="iconset.detail=true",ng-class="{true:'sel',false:''}[iconset.detail]")
+        i.glyphicon.glyphicon-th(ng-click="ui.detail=false",ng-class="{true:'',false:'sel'}[ui.detail]")
+        i.glyphicon.glyphicon-th-large(ng-click="ui.detail=true",ng-class="{true:'sel',false:''}[ui.detail]")
       span.acc-panel.pull-right
         | {% if user.is_authenticated %}
         | {{ user.username }}
@@ -47,21 +47,21 @@ html
         | {% endif %}
 
     .ico-li.chosen
-      #choose-hint.ico-li-it(ng-show="iconset.cur.icons.length==0")
+      #choose-hint.ico-li-it(ng-show="!st.len")
         icon(src="svg/default.svg")
       | {% verbatim %}
-      .ico-li-it(ng-repeat="g in iconset.cur.icons")
-        icon(src="{{g.svg}}",del="iconset.cur.del(e,g)")
+      .ico-li-it(ng-repeat="g in st.list")
+        icon(src="{{g.svg}}",del="st.add(g)")
       | {% endverbatim %}
     | {% include 'glyph-modal.jade' %}
     | {% include 'glyph-detail.jade' %}
     | {% include 'license-modal.jade' %}
     | {% verbatim %}
-    .ico-li.small.all(ng-show="!iconset.detail")
-      .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
+    .ico-li.small.all(ng-show="!ui.detail")
+      .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
         icon.ico-main(src="{{g.svg}}")
-    .ico-li.all(ng-show="iconset.detail")
-      .ico-li-it(ng-repeat="g in glyphs",ng-click="iconset.cur.add(g)",ng-class="{true:'added',false:''}[g.added]")
+    .ico-li.all(ng-show="ui.detail")
+      .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]")
         .icons
           icon.ico-main(src="{{g.svg}}")
           //-
@@ -88,3 +88,6 @@ html
         | {% endverbatim %}
     #footer
       | 愛 Aicon
+      | {% verbatim %}
+      div(ng-repeat="it in xxx") x {{it}}
+      | {% endverbatim %}

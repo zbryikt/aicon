@@ -74,7 +74,9 @@ class DateTimeField(models.DateTimeField):
 
 def enjson(obj):
   lst = []
-  if ((type(obj)==type([]) and len(filter(lambda x: isinstance(x, models.Model), obj))==len(obj)) or
+  if type(obj)==type([]) and len(obj)>0 and len(filter(lambda x: getattr(type(x), "Wrapper", None), obj))==len(obj):
+    return type(obj[0]).Wrapper("json", obj)
+  elif ((type(obj)==type([]) and len(filter(lambda x: isinstance(x, models.Model), obj))==len(obj)) or
      isinstance(obj, models.query.QuerySet)): return serializers.serialize('json', obj)
   elif type(obj)==type({}):
     lst = ['"%s": %s'%(k, enjson(obj[k])) for k in obj]

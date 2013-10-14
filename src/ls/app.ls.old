@@ -1,14 +1,24 @@
+angular.module \main, <[ui.select2 utils]>
+.config ($httpProvider) ->
+  $httpProvider.defaults.headers.common["X-CSRFToken"] = $.cookie \csrftoken
+
 main = ($scope, $http) ->
   $scope.glyphs = []
   $scope.tag = {list: []}
   $scope.lic = {name:"",desc:"",url:"",pd:false,at:false,sa:false,nd:false,nc:false,file:null}
   $scope.iconset = {list: [], cur: {}, detail: true}
   $scope.iconset.cur = icons: [], pk: -1, name: ""
+  $scope.search-keyword = ""
   $scope.detail = {}
   $scope.mouse = {select: false}
   $scope.mouse.over = (e, g) ->
     console.log "moving: #{g.name}"
     if @select => g.added = !g.added
+
+  $scope.search-timer = null
+  $scope.$watch \searchKeyword, ->
+    if $scope.search-timer => clearTimeout $scope.search-timer
+    $scope.search-timer = setTimeout (-> $scope.search!), 700
 
   $scope.detail.show = (e, s) ->
     @cur = s
@@ -27,10 +37,14 @@ main = ($scope, $http) ->
     else
       @icons.splice @icons.indexOf(g), 1
       g.added = false
-
   $scope.iconset.cur.del = (e, g) ->
     if @icons.indexOf(g) + 1 => @icons.splice(that - 1, 1)
-
+  $scope.search = ->
+    console.log "searching: ",$scope.search-keyword
+    $http.get \/glyph/, {params: {q: $scope.search-keyword, page_limit: 100}}
+    .success (d) -> 
+      console.log "load glyphs.."
+      $scope.glyphs = d.data
   $scope.build-font = ->
     $http.post \/build/, ($scope.iconset.cur.icons.map (-> it.pk))
     .success (d) ->
@@ -48,7 +62,10 @@ main = ($scope, $http) ->
 
   $scope.iconset.cur.set = (s) ->
     $scope.iconset.cur{icons,pk,name} = s
-
+  $scope.iconset.load = ->
+    $http.get \/iconset/
+    .success (d) ->
+      $scope.iconset.list = d
   $scope.lic.load = ->
     $http.get \/license/
     .success (d) -> $scope.lic.list = d.data
@@ -62,6 +79,11 @@ main = ($scope, $http) ->
 
   $scope.tag.load = ->
     $http.get \/tag/ .success (d) -> $scope.tag.list = d.data
+
+  $scope.glyph-list = 
+    hash: {}
+    item: (k,v) -> if v and !(k of has) => @hash[k] = v else @hash[k]
+    
 
   ########## for uploading glyph #########
   $scope.glyph = 
