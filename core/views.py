@@ -116,7 +116,7 @@ class GlyphView(utils.RestView):
       form = forms.GlyphForm(request.POST, f)
       if not form.is_valid():    
         context = {"form": form}
-        return Httpresponse(utils.enjson([]))
+        return HttpResponse(utils.enjson([]))
       tags = form.cleaned_data["tags"]
       glyph = form.save(commit=False)
       glyph.uploader = request.user

@@ -13,12 +13,16 @@ html
       | {% verbatim %}
       div(style="display: inline-block;")
         .ico-li#iconset
-          .ico-li-it(ng-show="!st.sets.len")
+          .ico-li-it(ng-show="st.sets.len==0")
             icon(src="default/login.svg")
             .name login now to
             br
             .count save your iconset!
-
+          .ico-li-it.short(ng-show="st.sets.len!=0",ng-click="st.new()")
+            icon(src="default/new.svg")
+            .count
+            br
+            .count
           .ico-li-it(ng-repeat="s in st.sets",ng-click="st.load(s)",ng-class="{true:'active',false:''}[st.cur.pk==s.pk]")
             icon(src="{{s.cover}}",del="st.rmset(e,s)")
             .name {{s.name}}
@@ -32,7 +36,7 @@ html
         i.glyphicon.glyphicon-edit(onclick="$('#iconset-name').focus();")
         button.btn.btn-link(ng-click="buildFont()") 建立字型
         button.btn.btn-link(ng-click="st.save()") 儲存快選單
-        button.btn.btn-link(ng-click="glyph.init()") 上傳圖示
+        button.btn.btn-link(ng-click="gh.new.init()") 上傳圖示
         //-button.btn.btn-link(data-toggle="modal",href="#glyph-uploader") 上傳圖示
       input.form-control(style="height: 30px;vertical-align:baseline;display:inline-block;width: 300px",type="text",ng-model="searchKeyword",placeholder="搜尋圖示...")
       span#menu-func
