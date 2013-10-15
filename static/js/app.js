@@ -3,6 +3,11 @@ var main;
 angular.module('main', ['ui.select2', 'utils']).config(function($httpProvider){
   return $httpProvider.defaults.headers.common["X-CSRFToken"] = $.cookie('csrftoken');
 });
+if (deepEq$(typeof String.prototype.trim, "undefined", '===')) {
+  String.prototype.trim = function(){
+    return String(this).replace(/^\s+|\s+$/g, '');
+  };
+}
 main = function($scope, $http){
   $scope = import$($scope, {
     ui: {
@@ -142,7 +147,74 @@ main = function($scope, $http){
         });
       }
     },
-    lc: 0,
+    lc: {
+      hash: {},
+      item: function(k, v){
+        if (v && !(k in this.hash)) {
+          return this.hash[k] = v;
+        } else {
+          return this.hash[k];
+        }
+      },
+      load: function(){
+        var this$ = this;
+        return $http.get('/license/').success(function(d){
+          return d.data.map(function(it){
+            return this$.item(it.pk, it);
+          });
+        });
+      },
+      init: function(){
+        this['new'].init();
+        return $('#lic-new-modal').modal('show');
+      },
+      'new': {
+        item: {},
+        init: function(){
+          return this.item = $.extend(true, {}, import$({}, this.initData));
+        },
+        initData: {
+          name: {
+            p: true,
+            v: ""
+          },
+          desc: {
+            p: true,
+            v: ""
+          },
+          url: {
+            p: true,
+            v: ""
+          },
+          pd: false,
+          at: false,
+          sa: false,
+          nd: false,
+          nc: false,
+          file: null
+        },
+        trim: function(){
+          var this$ = this;
+          return ['name', 'desc', 'url'].map(function(it){
+            var that;
+            if (that = this$.item[it].v) {
+              return this$.item[it].v = that.trim();
+            }
+          });
+        },
+        save: function(){
+          this.trim();
+          if (!this.item.name.v) {
+            $('#lic-new-modal .error-hint.missed').show().delay(2000).fadeOut(1000);
+            return this.item.name.p = false;
+          }
+          $('#lic-form-pxy').load(function(){
+            return $('#lic-new-modal').modal('hide');
+          });
+          return $('#lic-form').submit();
+        }
+      }
+    },
     gh: {
       list: [],
       hash: {},
@@ -152,6 +224,14 @@ main = function($scope, $http){
         } else {
           return this.hash[k];
         }
+      },
+      trim: function(o){
+        var this$ = this;
+        return ['name', 'desc', 'author', 'author_url'].map(function(it){
+          if (it in o && o[it].v) {
+            return o[it].v = o[it].v.trim();
+          }
+        });
       },
       'new': {
         h: {
@@ -188,6 +268,7 @@ main = function($scope, $http){
             var i$, ref$, len$, d, k;
             for (i$ = 0, len$ = (ref$ = this.data).length; i$ < len$; ++i$) {
               d = ref$[i$];
+              $scope.gh.trim(d);
               for (k in {
                 name: d.name,
                 author: d.author,
@@ -220,6 +301,7 @@ main = function($scope, $http){
           data: {},
           save: function(){
             var k;
+            $scope.gh.trim(this.data);
             if ((function(){
               var ref$, results$ = [];
               for (k in {
@@ -234,7 +316,7 @@ main = function($scope, $http){
             }.call(this)).filter(function(it){
               return it;
             }).length > 0) {
-              return;
+              return $('#glyph-new-modal .error-hint.missed').show().delay(2000).fadeOut(1000);
             }
             if (!$('#glyph-new-svg').val()) {
               return this.data.svg.p = false;
@@ -319,6 +401,90 @@ main = function($scope, $http){
   $scope.st.init();
   return $scope.qr.init();
 };
+function deepEq$(x, y, type){
+  var toString = {}.toString, hasOwnProperty = {}.hasOwnProperty,
+      has = function (obj, key) { return hasOwnProperty.call(obj, key); };
+  var first = true;
+  return eq(x, y, []);
+  function eq(a, b, stack) {
+    var className, length, size, result, alength, blength, r, key, ref, sizeB;
+    if (a == null || b == null) { return a === b; }
+    if (a.__placeholder__ || b.__placeholder__) { return true; }
+    if (a === b) { return a !== 0 || 1 / a == 1 / b; }
+    className = toString.call(a);
+    if (toString.call(b) != className) { return false; }
+    switch (className) {
+      case '[object String]': return a == String(b);
+      case '[object Number]':
+        return a != +a ? b != +b : (a == 0 ? 1 / a == 1 / b : a == +b);
+      case '[object Date]':
+      case '[object Boolean]':
+        return +a == +b;
+      case '[object RegExp]':
+        return a.source == b.source &&
+               a.global == b.global &&
+               a.multiline == b.multiline &&
+               a.ignoreCase == b.ignoreCase;
+    }
+    if (typeof a != 'object' || typeof b != 'object') { return false; }
+    length = stack.length;
+    while (length--) { if (stack[length] == a) { return true; } }
+    stack.push(a);
+    size = 0;
+    result = true;
+    if (className == '[object Array]') {
+      alength = a.length;
+      blength = b.length;
+      if (first) { 
+        switch (type) {
+        case '===': result = alength === blength; break;
+        case '<==': result = alength <= blength; break;
+        case '<<=': result = alength < blength; break;
+        }
+        size = alength;
+        first = false;
+      } else {
+        result = alength === blength;
+        size = alength;
+      }
+      if (result) {
+        while (size--) {
+          if (!(result = size in a == size in b && eq(a[size], b[size], stack))){ break; }
+        }
+      }
+    } else {
+      if ('constructor' in a != 'constructor' in b || a.constructor != b.constructor) {
+        return false;
+      }
+      for (key in a) {
+        if (has(a, key)) {
+          size++;
+          if (!(result = has(b, key) && eq(a[key], b[key], stack))) { break; }
+        }
+      }
+      if (result) {
+        sizeB = 0;
+        for (key in b) {
+          if (has(b, key)) { ++sizeB; }
+        }
+        if (first) {
+          if (type === '<<=') {
+            result = size < sizeB;
+          } else if (type === '<==') {
+            result = size <= sizeB
+          } else {
+            result = size === sizeB;
+          }
+        } else {
+          first = false;
+          result = size === sizeB;
+        }
+      }
+    }
+    stack.pop();
+    return result;
+  }
+}
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];

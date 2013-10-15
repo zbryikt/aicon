@@ -1,9 +1,7 @@
 main = ($scope, $http) ->
-  $scope.glyphs = []
   $scope.tag = {list: []}
   $scope.lic = {name:"",desc:"",url:"",pd:false,at:false,sa:false,nd:false,nc:false,file:null}
-  $scope.iconset = {list: [], cur: {}, detail: true}
-  $scope.iconset.cur = icons: [], pk: -1, name: ""
+
   $scope.detail = {}
   $scope.mouse = {select: false}
   $scope.mouse.over = (e, g) ->
@@ -16,21 +14,6 @@ main = ($scope, $http) ->
     e.stopPropagation!
     $ \#glyph-detail .modal \show
 
-  $scope.iconset.del = (e, s) ->
-    $http.delete "/iconset/#{s.pk}"
-    .success (d) ~> if @list.indexOf(s) + 1 => @list.splice(that - 1, 1)
-
-  $scope.iconset.cur.add = (g) ->
-    if !(@icons.filter -> parseInt(it.pk)==parseInt(g.pk)).length =>
-      g.added = true
-      @icons.push g
-    else
-      @icons.splice @icons.indexOf(g), 1
-      g.added = false
-
-  $scope.iconset.cur.del = (e, g) ->
-    if @icons.indexOf(g) + 1 => @icons.splice(that - 1, 1)
-
   $scope.build-font = ->
     $http.post \/build/, ($scope.iconset.cur.icons.map (-> it.pk))
     .success (d) ->
@@ -38,16 +21,6 @@ main = ($scope, $http) ->
         console.log "redirect to /build/#{d.name}"
         window.location.href = "/build/#{d.name}"
       else console.log "build font failed."
-
-  $scope.iconset.cur.save = ->
-    if @icons.length==0 => return
-    $http.post \/iconset/, {} <<< @{pk,name} <<< {icons: @icons.map ->it.pk }
-    .success (d) -> 
-      console.log "save iconset done"
-      $scope.iconset.load!
-
-  $scope.iconset.cur.set = (s) ->
-    $scope.iconset.cur{icons,pk,name} = s
 
   $scope.lic.load = ->
     $http.get \/license/
@@ -58,7 +31,6 @@ main = ($scope, $http) ->
       $ \#lic-uploader .modal \hide
       #console.log ( $ \#lic-form-pxy .contents!0.body.innerText )
     $ \#lic-form .submit!
-
 
   $scope.tag.load = ->
     $http.get \/tag/ .success (d) -> $scope.tag.list = d.data

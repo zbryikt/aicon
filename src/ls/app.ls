@@ -2,6 +2,11 @@ angular.module \main, <[ui.select2 utils]>
 .config ($httpProvider) ->
   $httpProvider.defaults.headers.common["X-CSRFToken"] = $.cookie \csrftoken
 
+if typeof String.prototype.trim === "undefined"
+    String.prototype.trim = ->
+        return String(this).replace(/^\s+|\s+$/g, '');
+
+
 main = ($scope, $http) ->
   $scope = $scope <<< do
     ui:
@@ -52,11 +57,34 @@ main = ($scope, $http) ->
         .success (d) ->
           $scope.gh.list = []
           d.data.map -> $scope.gh.list.push $scope.gh.item it.pk, it
-    lc: 0
+
+    lc:
+      hash: {}
+      item: (k,v) -> if v and !(k of @hash) => @hash[k] = v else @hash[k]
+      load: -> $http.get \/license/ .success (d) ~> d.data.map ~> @item it.pk, it
+
+      init: -> 
+        @new.init!
+        $ \#lic-new-modal .modal \show
+
+      new:
+        item: {}
+        init: -> @item = $.extend true, {}, {} <<< @init-data
+        init-data: name:{p:true,v:""}, desc:{p:true, v:""}, url:{p:true,v:""}, pd:false, at:false, sa:false, nd:false, nc:false, file:null
+        trim: -> <[name desc url]>map ~> if @item[it]v => @item[it]v = that.trim!
+        save: ->
+          @trim!
+          if !@item.name.v =>
+            $ '#lic-new-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
+            return @item.name.p=false #TODO: check if angular support validation
+          $ \#lic-form-pxy .load -> $ \#lic-new-modal .modal \hide
+          $ \#lic-form .submit!
+
     gh:
       list: []
       hash: {}
       item: (k,v) -> if v and !(k of @hash) => @hash[k] = v else @hash[k]
+      trim: (o) -> <[name desc author author_url]>map ~> if (it of o) and o[it]v => o[it]v = o[it]v.trim!
       new:
         # handler after uploading glyph
         h:
@@ -76,7 +104,9 @@ main = ($scope, $http) ->
         list:
           data: []
           save: ->
-            for d in @data => for k of d{name,author,license,tags} => d[k].p = if !d[k].v => false else true
+            for d in @data =>
+              $scope.gh.trim d
+              for k of d{name,author,license,tags} => d[k]p = if !d[k]v => false else true
             $scope.gh.new.h.set @callback
             $ \#glyph-new-form .submit!
           callback: ->
@@ -89,9 +119,11 @@ main = ($scope, $http) ->
         item:
           data: {}
           save: ->
+            $scope.gh.trim @data
             if (for k of @data{name,author,license,tags} =>
               !@data[k].p = if !@data[k].v => false else true
-            )filter(->it).length>0 => return
+            )filter(->it).length>0 =>
+              return $ '#glyph-new-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
             if not ( $ \#glyph-new-svg .val! ) => return @data.svg.p = false
             $scope.gh.new.h.set @callback
             $ \#glyph-new-form .submit!
