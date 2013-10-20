@@ -31,7 +31,9 @@ main = ($scope, $http) ->
         else if @sets.indexOf(s) + 1 => @sets.splice(that - 1, 1)
 
 
-      add: (g) -> if (g.added = if @list[g.pk] => delete @list[g.pk] and false else (@list[g.pk] = g) and true) => @len++ and that
+      add: (g) ->
+        console.log \added
+        if (g.added = if @list[g.pk] => delete @list[g.pk] and false else (@list[g.pk] = g) and true) => @len++ and that
       clean: -> [k for k of @list]map ~>
         @list[it]added = false
         delete @list[it]

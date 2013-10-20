@@ -56,6 +56,7 @@ main = function($scope, $http){
       },
       add: function(g){
         var that, ref$, key$, ref1$;
+        console.log('added');
         if (that = g.added = this.list[g.pk]
           ? (ref1$ = (ref$ = this.list)[key$ = g.pk], delete ref$[key$], ref1$) && false
           : (this.list[g.pk] = g) && true) {

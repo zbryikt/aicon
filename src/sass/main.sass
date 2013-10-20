@@ -1,0 +1,45 @@
+@import base
+
+html, body
+  margin: 0
+  padding: 0
+  width: 100%
+  height: 100%
+
+#glyph-new-modal, #lic-new-modal, #glyph-edit-modal
+  display: none
+
+.ico-li-it
+  width: 32px
+  height: 32px
+  margin: 12px
+  display: inline-block
+  border: 1px solid rgba(0,0,0,0)
+  border-radius: 3px
+
+.ico-li-it .svg-icon
+  width: 32px
+  height: 32px
+
+#icon-hint
+  position: absolute
+  top: 0px
+  left: 0px
+  z-index: 9999
+  display: none
+  text-transform: lowercase
+  background: #fff
+  border: 1px solid #999
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2)
+  &:before
+    box-shadow: 2px 2px 3px rgba(0,0,0,0.2)
+    border-bottom: 1px solid #999
+    border-right: 1px solid #999
+    background: #fff
+  a
+    color: #c72
+    text-decoration: none
+
+.ico-li.small .ico-li-it.added, .ico-li-it.added
+  border: 1px solid $bdr-sel
+  background: $bkg-sel

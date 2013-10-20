@@ -43,15 +43,21 @@ angular.module \utils, <[]>
       scope.$watch \model (v) -> $ element .select2 \data,  v
 .directive \icon, ($compile)->
   return
-    restrict: 'E' 
+    restrict: 'E'
     replace: true
     scope: {"src": "@", "del": "&", "class": "@"}
     template:
-      "<div class='svg-icon {{class}}'><div class='object'></div><div class='mask'></div>" + 
+      "<div class='svg-icon {{class}}'><div class='object'></div><div class='mask'></div>" +
       "<div class='delete' ng-click='$event.stopPropagation();del({e: $event})'>" +
       "<i class='glyphicon glyphicon-minus-sign'></i></div></div>"
     link: (scope, element, attrs) ->
       if !attrs.del => element.find \.delete .remove!
+      # specific for aicon
+      element.on \mouseover, (e) ->
+        p = element.offset!
+        n = $ \#icon-hint
+          ..show!
+          ..css top: "#{p.top - n.outerHeight!}px", left: "#{element.width! / 2 + p.left - n.outerWidth! / 2}px"
       attrs.$observe \src, (v) ->
         if v => element.find \.object .replaceWith "<object class='object' type='image/svg+xml' data='/m/#{v}'></object>"
         else element.find \.object .replaceWith "<div class='object'>no data</div>"

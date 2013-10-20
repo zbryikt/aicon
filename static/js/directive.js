@@ -111,6 +111,17 @@ angular.module('utils', []).directive('tags', function($compile){
       if (!attrs.del) {
         element.find('.delete').remove();
       }
+      element.on('mouseover', function(e){
+        var p, x$, n;
+        p = element.offset();
+        x$ = n = $('#icon-hint');
+        x$.show();
+        x$.css({
+          top: (p.top - n.outerHeight()) + "px",
+          left: (element.width() / 2 + p.left - n.outerWidth() / 2) + "px"
+        });
+        return x$;
+      });
       return attrs.$observe('src', function(v){
         if (v) {
           return element.find('.object').replaceWith("<object class='object' type='image/svg+xml' data='/m/" + v + "'></object>");
