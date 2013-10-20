@@ -6,24 +6,30 @@ if typeof String.prototype.trim === "undefined"
     String.prototype.trim = ->
         return String(this).replace(/^\s+|\s+$/g, '');
 
-
 main = ($scope, $http) ->
   $scope = $scope <<< do
+    build-font: ->
+      $http.post \/build/, ($scope.st.cur.icons.map (-> it.pk))
+      .success (d) ->
+        if d and d.name =>
+          console.log "redirect to /build/#{d.name}"
+          window.location.href = "/build/#{d.name}"
+        else console.log "build font failed."
     ui:
-      detail: false
+      detail: true
     st:
       sets: []
       init: -> $http.get \/iconset/ .success (d) ~> @sets = d
       len: 0
       name: "圖示集"
       list: {}
-      cur: icon: [] name: "圖示集" pk: -1
+      cur: icons: [] name: "圖示集" pk: -1
       rmset: (e, s) ->
         if s and s.pk>=0 =>
           $http.delete "/iconset/#{s.pk}"
           .success (d) ~> if @sets.indexOf(s) + 1 => @sets.splice(that - 1, 1)
         else if @sets.indexOf(s) + 1 => @sets.splice(that - 1, 1)
-        
+
 
       add: (g) -> if (g.added = if @list[g.pk] => delete @list[g.pk] and false else (@list[g.pk] = g) and true) => @len++ and that
       clean: -> [k for k of @list]map ~>
@@ -32,8 +38,7 @@ main = ($scope, $http) ->
         @len--
       rand-name: -> <[圖示集 我的集合 尚未命名 還沒取名 新集合 超棒列表]>[parseInt Math.random!* *]
       new: -> @sets.push @load cover: "default/unknown.svg", icons: [], name: @rand-name!, pk: -1
-        
-      load: (s) -> 
+      load: (s) ->
         @clean!
         @cur = s
         @name = s.name
@@ -45,7 +50,7 @@ main = ($scope, $http) ->
         [k for k of @list]map ~> @cur.icons.push @list[it]
         $http.post \/iconset/, {pk: @cur.pk, name: @name, icons: [k for k of @list]map(~>@list[it]pk)}
 
-    qr: 
+    qr:
       keyword: ""
       timer: null
       init: ->
@@ -55,15 +60,20 @@ main = ($scope, $http) ->
       load: ->
         $http.get \/glyph/, {params: {q: @keyword, page_limit: 100}}
         .success (d) ->
-          $scope.gh.list = []
+          [$scope.gh.list, hash] = [[], {}]
           d.data.map -> $scope.gh.list.push $scope.gh.item it.pk, it
-
+          d.data.map -> hash[it.license.pk] = 1
+          $scope.lc.fetch [k for k of hash]
+    # todo: how licenses are fetched? how if hash missed?
     lc:
       hash: {}
       item: (k,v) -> if v and !(k of @hash) => @hash[k] = v else @hash[k]
       load: -> $http.get \/license/ .success (d) ~> d.data.map ~> @item it.pk, it
-
-      init: -> 
+      fetch: (v) ->
+        if !v => return $.ajax \/license/, {dataType: \json} .success (d) ~> for it in d.data => @item it.pk, it
+        $http.put \/license/, v.filter(~> @hash[it]) .success (d) ~>
+          d.map ~> if !@hash[it.pk] => @item it.pk, it
+      init: ->
         @new.init!
         $ \#lic-new-modal .modal \show
 
@@ -84,7 +94,10 @@ main = ($scope, $http) ->
       list: []
       hash: {}
       item: (k,v) -> if v and !(k of @hash) => @hash[k] = v else @hash[k]
-      trim: (o) -> <[name desc author author_url]>map ~> if (it of o) and o[it]v => o[it]v = o[it]v.trim!
+      trim: (o) ->
+        <[name desc author author_url]>map ~> if (it of o) and o[it]v => o[it]v = o[it]v.trim!
+        (for k of o{name,author,license,tags} => o[k]p = if !o[k]v => false else true)filter(->!it).length
+      modal: title: "Upload Icon"
       new:
         # handler after uploading glyph
         h:
@@ -97,6 +110,7 @@ main = ($scope, $http) ->
         n: null   # short-cut for gh.item.data
         init: ->
           @list.data = []
+          $scope.gh.modal.title = "Upload Icons"
           @n = @item.data = $.extend true, {}, {} <<< @init-data
           $ \#glyph-new-modal .modal \show
             ..find \.single .show!
@@ -138,6 +152,7 @@ main = ($scope, $http) ->
             angular.element \#glyph-new-modal .scope!$apply ->
               $scope.gh.new.list.data = for x,i in f =>
                 $.extend true, {}, {id: pks[i], svg: "svg/#{x.name}"} <<< $scope.gh.new.item.data{name,author,author_url,license,tags}
+              $scope.gh.modal.title = "Edit Icons Detail"
             $ "\#glyph-new-modal .multiple" .show!
             $ "\#glyph-new-modal .single" .hide!
         init-data:
@@ -147,14 +162,40 @@ main = ($scope, $http) ->
           author_url: { p: true, v: "" }
           license:    { p: true, v: "" }
           tags:       { p: true, v: "" }
-          svg:        
+          svg:
             p: true
             v: "(no file selected)"
-            set: (v) -> $scope.$apply ~> 
+            set: (v) -> $scope.$apply ~>
               f = [x.name for x in document.getElementById \glyph-new-svg .files]
               @v = if f.length > 1 => "#{f.0}\n... (#{f.length} files)"
                    else if f.length==1 => "#{f.0}"
                    else "(no file selected)"
 
+      edit:
+        item: {}
+        init: (e, g) ->
+          console.log g
+          @item = $.extend true, {}, {} <<< $scope.gh.new.init-data
+          <[name author author_url svg]>map ~> @item[it]v = ( g[it] or "" )
+          @item
+            ..tags.v = g.tags.map -> {id: it, text: it}
+            ..license.v = $scope.lc.item g.license.pk
+            ..pk = g.pk
+          e.stopPropagation!
+          $ \#glyph-edit-modal .modal \show
+        flat: (g) ->
+          ret = {}
+          for k in <[name author author_url]> => ret[k] = ((g[k] and g[k]v) or (g[k] or ""))
+          ret
+            ..license = g.license.v.pk
+            ..tags = g.tags.v.map(-> it.id)join \,
+        save: ->
+          if $scope.gh.trim @item => return $ '#glyph-edit-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
+          $http.put "/glyph/#{@item.pk}/", @flat @item .success (d) ~>
+            if (@item.pk in d) => return $ \#glyph-edit-modal .modal \hide
+            else $ '#glyph-edit-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
+
+
+  $scope.lc.fetch!
   $scope.st.init!
   $scope.qr.init!

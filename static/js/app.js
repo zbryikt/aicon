@@ -10,8 +10,20 @@ if (deepEq$(typeof String.prototype.trim, "undefined", '===')) {
 }
 main = function($scope, $http){
   $scope = import$($scope, {
+    buildFont: function(){
+      return $http.post('/build/', $scope.st.cur.icons.map(function(it){
+        return it.pk;
+      })).success(function(d){
+        if (d && d.name) {
+          console.log("redirect to /build/" + d.name);
+          return window.location.href = "/build/" + d.name;
+        } else {
+          return console.log("build font failed.");
+        }
+      });
+    },
     ui: {
-      detail: false
+      detail: true
     },
     st: {
       sets: [],
@@ -25,7 +37,7 @@ main = function($scope, $http){
       name: "圖示集",
       list: {},
       cur: {
-        icon: [],
+        icons: [],
         name: "圖示集",
         pk: -1
       },
@@ -140,10 +152,21 @@ main = function($scope, $http){
             page_limit: 100
           }
         }).success(function(d){
-          $scope.gh.list = [];
-          return d.data.map(function(it){
+          var ref$, hash, k;
+          ref$ = [[], {}], $scope.gh.list = ref$[0], hash = ref$[1];
+          d.data.map(function(it){
             return $scope.gh.list.push($scope.gh.item(it.pk, it));
           });
+          d.data.map(function(it){
+            return hash[it.license.pk] = 1;
+          });
+          return $scope.lc.fetch((function(){
+            var results$ = [];
+            for (k in hash) {
+              results$.push(k);
+            }
+            return results$;
+          }()));
         });
       }
     },
@@ -161,6 +184,30 @@ main = function($scope, $http){
         return $http.get('/license/').success(function(d){
           return d.data.map(function(it){
             return this$.item(it.pk, it);
+          });
+        });
+      },
+      fetch: function(v){
+        var this$ = this;
+        if (!v) {
+          return $.ajax('/license/', {
+            dataType: 'json'
+          }).success(function(d){
+            var i$, ref$, len$, it, results$ = [];
+            for (i$ = 0, len$ = (ref$ = d.data).length; i$ < len$; ++i$) {
+              it = ref$[i$];
+              results$.push(this$.item(it.pk, it));
+            }
+            return results$;
+          });
+        }
+        return $http.put('/license/', v.filter(function(it){
+          return this$.hash[it];
+        })).success(function(d){
+          return d.map(function(it){
+            if (!this$.hash[it.pk]) {
+              return this$.item(it.pk, it);
+            }
           });
         });
       },
@@ -226,12 +273,29 @@ main = function($scope, $http){
         }
       },
       trim: function(o){
-        var this$ = this;
-        return ['name', 'desc', 'author', 'author_url'].map(function(it){
+        var k, this$ = this;
+        ['name', 'desc', 'author', 'author_url'].map(function(it){
           if (it in o && o[it].v) {
             return o[it].v = o[it].v.trim();
           }
         });
+        return (function(){
+          var results$ = [];
+          for (k in {
+            name: o.name,
+            author: o.author,
+            license: o.license,
+            tags: o.tags
+          }) {
+            results$.push(o[k].p = !o[k].v ? false : true);
+          }
+          return results$;
+        }()).filter(function(it){
+          return !it;
+        }).length;
+      },
+      modal: {
+        title: "Upload Icon"
       },
       'new': {
         h: {
@@ -256,6 +320,7 @@ main = function($scope, $http){
         init: function(){
           var x$;
           this.list.data = [];
+          $scope.gh.modal.title = "Upload Icons";
           this.n = this.item.data = $.extend(true, {}, import$({}, this.initData));
           x$ = $('#glyph-new-modal').modal('show');
           x$.find('.single').show();
@@ -337,7 +402,7 @@ main = function($scope, $http){
             }
             angular.element('#glyph-new-modal').scope().$apply(function(){
               var i, x;
-              return $scope.gh['new'].list.data = (function(){
+              $scope.gh['new'].list.data = (function(){
                 var i$, ref$, len$, ref1$, ref2$, results$ = [];
                 for (i$ = 0, len$ = (ref$ = f).length; i$ < len$; ++i$) {
                   i = i$;
@@ -349,6 +414,7 @@ main = function($scope, $http){
                 }
                 return results$;
               }());
+              return $scope.gh.modal.title = "Edit Icons Detail";
             });
             $("#glyph-new-modal .multiple").show();
             return $("#glyph-new-modal .single").hide();
@@ -395,9 +461,59 @@ main = function($scope, $http){
             }
           }
         }
+      },
+      edit: {
+        item: {},
+        init: function(e, g){
+          var x$, this$ = this;
+          console.log(g);
+          this.item = $.extend(true, {}, import$({}, $scope.gh['new'].initData));
+          ['name', 'author', 'author_url', 'svg'].map(function(it){
+            return this$.item[it].v = g[it] || "";
+          });
+          x$ = this.item;
+          x$.tags.v = g.tags.map(function(it){
+            return {
+              id: it,
+              text: it
+            };
+          });
+          x$.license.v = $scope.lc.item(g.license.pk);
+          x$.pk = g.pk;
+          e.stopPropagation();
+          return $('#glyph-edit-modal').modal('show');
+        },
+        flat: function(g){
+          var ret, i$, ref$, len$, k, x$;
+          ret = {};
+          for (i$ = 0, len$ = (ref$ = ['name', 'author', 'author_url']).length; i$ < len$; ++i$) {
+            k = ref$[i$];
+            ret[k] = (g[k] && g[k].v) || (g[k] || "");
+          }
+          x$ = ret;
+          x$.license = g.license.v.pk;
+          x$.tags = g.tags.v.map(function(it){
+            return it.id;
+          }).join(',');
+          return x$;
+        },
+        save: function(){
+          var this$ = this;
+          if ($scope.gh.trim(this.item)) {
+            return $('#glyph-edit-modal .error-hint.missed').show().delay(2000).fadeOut(1000);
+          }
+          return $http.put("/glyph/" + this.item.pk + "/", this.flat(this.item)).success(function(d){
+            if (in$(this$.item.pk, d)) {
+              return $('#glyph-edit-modal').modal('hide');
+            } else {
+              return $('#glyph-edit-modal .error-hint.missed').show().delay(2000).fadeOut(1000);
+            }
+          });
+        }
       }
     }
   });
+  $scope.lc.fetch();
   $scope.st.init();
   return $scope.qr.init();
 };

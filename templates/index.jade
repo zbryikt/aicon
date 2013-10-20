@@ -57,8 +57,8 @@ html
       .ico-li-it(ng-repeat="g in st.list")
         icon(src="{{g.svg}}",del="st.add(g)")
       | {% endverbatim %}
-    | {% include 'glyph-modal.jade' %}
-    | {% include 'glyph-detail.jade' %}
+    | {% include 'glyph/new-modal.jade' %}
+    | {% include 'glyph/edit-modal.jade' %}
     | {% include 'license-modal.jade' %}
     | {% verbatim %}
     .ico-li.small.all(ng-show="!ui.detail")
@@ -82,16 +82,13 @@ html
               | by
               a(href="{{g.author_url}}#") {{g.author}}
               |  @ 
-              a(href="{{g.license_url}}#") {{g.license}}
+              a(href="{{g.license_url}}#") {{g.license.name}}
           .tags
             .tag(ng-repeat="t in g.tags") {{t}}
           .action
             button.btn.btn-success.btn-sm.detail(ng-show="!g.added") Add
             button.btn.btn-danger.btn-sm.detail(ng-show="g.added") Remove
-            button.btn.btn-primary.btn-sm.detail(ng-click="detail.show($event,g);") Detail
+            button.btn.btn-primary.btn-sm.detail(ng-click="gh.edit.init($event,g);") Detail
         | {% endverbatim %}
     #footer
       | 愛 Aicon
-      | {% verbatim %}
-      div(ng-repeat="it in xxx") x {{it}}
-      | {% endverbatim %}

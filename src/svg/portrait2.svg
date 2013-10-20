@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="480px" height="480px" viewBox="0 0 480 480" enable-background="new 0 0 480 480" xml:space="preserve">
+<circle cx="240" cy="90" r="90"/>
+<path d="M307.311,179.735C290.824,198.299,266.78,210,240,210c-26.781,0-50.824-11.701-67.311-30.265
+	C111.979,200.655,90,254.818,90,336.924v126.901C90,472.758,96.715,480,105,480h270c8.283,0,15-7.242,15-16.175V336.924
+	C390,254.818,368.021,200.655,307.311,179.735z"/>
+<polygon points="30,60 90,60 90,30 0,30 0,120 30,120 "/>
+<polygon points="30,420 30,360 0,360 0,450 90,450 90,420 "/>
+<polygon points="450,360 450,420 390,420 390,449.999 480,450 480,360 "/>
+<polygon points="390.001,30 390,60 450,60 450,120 480,120 480,30 "/>
+</svg>

@@ -87,6 +87,21 @@ class GlyphView(utils.RestView):
   order_by = "-create_date"
   wrapper = Glyph.Wrapper
 
+  def put(self, request, *args, **kwargs):
+    try: 
+      id = int(kwargs["id"])
+      g = Glyph.objects.get(pk=id)
+      if request.user!=g.uploader: raise
+      data = utils.dejson(request.body)
+      form = forms.GlyphEditForm(data, instance=g)
+      if not form.is_valid(): 
+        print(form.errors)
+        print("not valid")
+        return HttpResponse("[]")
+      form.save()
+    except: raise Http404()
+    return HttpResponse("[%d]"%id)
+ 
   def post(self, request, *args, **kwargs):
     if 'form-0-name' in request.POST:
       GFS = formset_factory(forms.GlyphEditForm)
@@ -151,6 +166,12 @@ class LicenseView(utils.RestView):
   des_model = License
   query_attr = ["id", "name"]
   order_by = "-create_date"
+
+  def put(self, request, *args, **kwargs):
+    try: data = utils.dejson(request.body)
+    except: return HttpResponse("[]")
+    lic = License.objects.filter(pk__in=data)
+    return HttpResponse(utils.enjson(lic))
 
   def post(self, request, *args, **kwargs):
     form = forms.LicenseForm(request.POST, request.FILES)

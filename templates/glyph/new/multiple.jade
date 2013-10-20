@@ -1,0 +1,42 @@
+| {% verbatim %}
+.multiple
+  .bypass
+    | Please give more details about them ( or just
+    a.action(href="#") bypass it
+    |  )
+  input(type="hidden",name="form-TOTAL_FORMS",value="{{gh.new.list.data.length}}")
+  input(type="hidden",name="form-INITIAL_FORMS",value="0")
+  input(type="hidden",name="form-MIN_NUM_FORMS",value="2")
+  input(type="hidden",name="form-MAX_NUM_FORMS",value="{{gh.new.list.data.length}}")
+  .row(ng-repeat="nf in gh.new.list.data")
+    .col-sm-5
+      .upload
+        icon(src="{{nf.svg}}")
+        input(type="hidden",name="form-{{$index}}-id",value="{{nf.id}}")
+        input(type="hidden",name="form-{{$index}}-svg",value="{{nf.svg}}")
+    .col-sm-7
+      .form
+        .form-row(ng-class="{true:'',false:'invalid'}[nf.name.p]")
+          .form-label
+            | Icon Name
+            i.required
+          .form-input: input(type="text",name="form-{{$index}}-name", placeholder="Icon Name",ng-model="nf.name.v")
+        .form-row(ng-class="{true:'',false:'invalid'}[nf.author.p]")
+          .form-label
+            | Author Name
+            i.required
+          .form-input: input(type="text",name="form-{{$index}}-author", placeholder="Author",ng-model="nf.author.v")
+        .form-row(ng-class="{true:'',false:'invalid'}[nf.author_url.p]")
+          .form-label Author URL
+          .form-input: input(type="text",name="form-{{$index}}-author_url", placeholder="URL to Author",ng-model="nf.author_url.v")
+        .form-row(ng-class="{true:'',false:'invalid'}[nf.license.p]")
+          .form-label
+            | License
+            i.required
+          .form-input
+            license(ng-model="nf.license.v",name="form-{{$index}}-license")
+            i.glyphicon.glyphicon-plus(ng-click="alert(1)") //-data-toggle="modal",href="#lic-new-modal")
+      small tags
+      .invalid-self(ng-class="{true:'',false:'invalid'}[nf.tags.p]")
+        tags(ng-model="nf.tags.v", name="form-{{$index}}-tags")
+| {% endverbatim %}

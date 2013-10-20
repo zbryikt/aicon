@@ -1,0 +1,27 @@
+iframe.pxy#glyph-new-form-pxy(name="glyph-new-form-pxy",height="0",width="0")
+#glyph-new-modal.modal.fade: .modal-dialog: .modal-content
+  .modal-header
+    | {% verbatim %}
+    button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+    h4.modal-title {{gh.modal.title}}
+    | {% endverbatim %}
+  .modal-body
+    form#glyph-new-form(enctype="multipart/form-data",method="post",target="glyph-new-form-pxy",action="/glyph/")
+      | {% csrf_token %}
+      | {% include 'glyph/new/single.jade' %}
+      | {% include 'glyph/new/multiple.jade' %}
+  .modal-footer
+    .error-hint.error
+      i.glyphicon.glyphicon-remove
+      | Some error occurred. Please try again later.
+    .error-hint.missed
+      i.glyphicon.glyphicon-remove
+      | Some fields are invalid. Please fix them.
+    .single
+      label.btn.btn-primary(ng-click="gh.new.item.save()") Upload
+      button.btn.btn-default(data-dismiss="modal") Cancel
+    .multiple
+      //- for unknown reason, <button> triggers iframe submission. so use label instead
+      //- Google Chrome 31.0.1636.0 dev
+      label.btn.btn-primary(ng-click="gh.new.list.save()") Save
+      button.btn.btn-default(data-dismiss="modal") Skip

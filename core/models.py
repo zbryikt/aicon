@@ -3,6 +3,7 @@ import datetime, json
 from django.db import models
 from django.contrib import auth
 from taggit.managers import TaggableManager
+from utils import utils
 
 class License(models.Model):
   name = models.CharField(max_length = 128)
@@ -18,6 +19,16 @@ class License(models.Model):
   create_date =models.DateTimeField(auto_now_add=True, default=datetime.datetime.now)
   def __unicode__(self):
     return self.name
+  wrap_fields = ["name", "desc", "url", "public_domain", "attribution", "sharealike", "no_derice", "no_commercial", "creator", "create_date"]
+  @classmethod
+  def Wrapper(self, datatype, qs):
+    ret = []
+    for q in qs:
+      obj = {}
+      for item in License.wrap_fields:
+        obj[item] = getattr(q, item)
+      ret += [obj]
+    return utils.enjson(ret)
 
 class Glyph(models.Model):
   svg = models.FileField(upload_to="svg")
@@ -38,10 +49,11 @@ class Glyph(models.Model):
     for q in qs:
       obj = {}
       for item in Glyph.wrap_fields:
-        obj[item] = str(getattr(q, item))
+        obj[item] = getattr(q, item)
+      obj["license"] = {"pk": q.license.pk, "name": q.license.name}
       obj["tags"] = [str(x.name) for x in q.tags.all()]
       ret += [obj]
-    return json.dumps(ret)
+    return utils.enjson(ret)
 
 class Iconset(models.Model):
   user = models.ForeignKey(auth.models.User)
