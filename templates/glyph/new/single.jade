@@ -1,36 +1,97 @@
 | {% verbatim %}
-.single.row
-  .col-sm-5
-    .upload.invalid-self(ng-class="{true:'',false:'invalid'}[gh.new.n.svg.p]")
-      i.glyphicon.glyphicon-upload
-      .name(style="font-size:12px;white-space: pre") {{gh.new.n.svg.v}}
-    input#glyph-new-svg(type="file",multiple,name="svg",onchange="angular.element(this).scope().gh.new.n.svg.set(this)")
-  .col-sm-7
-    .form
-      .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.name.p]")
-        .form-label
-          | Icon Name
-          i.required
-        .form-input: input(type="text",name="name", placeholder="Icon Name",ng-model="gh.new.n.name.v")
-      .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.author.p]")
-        .form-label
-          | Author Name
-          i.required
-        .form-input: input(type="text",name="author", placeholder="Author",ng-model="gh.new.n.author.v")
-      .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.author_url.p]")
-        .form-label Author URL
-        .form-input: input(type="text",name="author_url", placeholder="URL to Author",ng-model="gh.new.n.author_url.v")
-      .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.license.p]")
-        .form-label
-          | License
-          i.required
-        .form-input
-          license(ng-model="gh.new.n.license.v",name="license")
-          i.glyphicon.glyphicon-plus(ng-click="lc.init()")
-    small tags
-    .invalid-self(ng-class="{true:'',false:'invalid'}[gh.new.n.tags.p]")
-      tags(ng-model="gh.new.n.tags.v", name="tags")
-| (
-i.required
-| : required )
+.ui.grid.single
+  .six.wide.column
+    .svg-file.invalid-self(ng-class="{true:'',false:'error'}[gh.new.n.svg.p]")
+      img(src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==")
+      .text: .ib: .ib-cell
+        i.icon.upload
+        .name(style="font-size:12px;white-space: pre") {{gh.new.n.svg.v}}
+      input#glyph-new-svg(type="file",multiple,name="svg",onchange="angular.element(this).scope().gh.new.n.svg.set(this)")
+  .ten.wide.column
+    .ui.form.segment
+      .two.fields
+        .field(ng-class="{true:'',false:'error'}[gh.new.n.name.p]")
+          label Icon Name
+          input(type="text",placeholder="icon name",name="name",ng-model="gh.new.n.name.v")
+        .field(ng-class="{true:'',false:'error'}[gh.new.n.author.p]")
+          label Author Name
+          input(type="text",placeholder="author name",name="author",ng-model="gh.new.n.author.v")
+      .field(ng-class="{true:'',false:'error'}[gh.new.n.author_url.p]")
+        label Author URL
+        input(type="text",placeholder="url of the author",name="author_url",ng-model="gh.new.n.author_url.v")
+      .field(ng-class="{true:'',false:'error'}[gh.new.n.license.p]")
+        label License
+        license(ng-model="gh.new.n.license.v",name="license",style="width:90%;")
+        i.icon.plus.add-lic(ng-click="lc.init()")
+      .field(ng-class="{true:'',false:'error'}[gh.new.n.tags.p]")
+        label Tags
+        tags(ng-model="gh.new.n.tags.v", name="tags")
+
+
+    //-
+      .form
+        .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.name.p]")
+          .form-label
+            | Icon Name
+            i.required
+          .form-input.ui.input: input(type="text",name="name", placeholder="Icon Name",ng-model="gh.new.n.name.v")
+        .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.author.p]")
+          .form-label
+            | Author Name
+            i.required
+          .form-input.ui.input: input(type="text",name="author", placeholder="Author",ng-model="gh.new.n.author.v")
+        .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.author_url.p]")
+          .form-label Author URL
+          .form-input.ui.input: input(type="text",name="author_url", placeholder="URL to Author",ng-model="gh.new.n.author_url.v")
+        .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.license.p]")
+          .form-label
+            | License
+            i.required
+          .form-input
+            license(ng-model="gh.new.n.license.v",name="license")
+            i.glyphicon.glyphicon-plus(ng-click="lc.init()")
+      small tags
+      .invalid-self(ng-class="{true:'',false:'invalid'}[gh.new.n.tags.p]")
+        tags(ng-model="gh.new.n.tags.v", name="tags")
+  | (
+  i.required
+  | : required )
+
 | {% endverbatim %}
+//-
+  | {% verbatim %}
+  .single.row
+    .col-sm-5
+      .upload.invalid-self(ng-class="{true:'',false:'invalid'}[gh.new.n.svg.p]")
+        i.glyphicon.glyphicon-upload
+        .name(style="font-size:12px;white-space: pre") {{gh.new.n.svg.v}}
+      input#glyph-new-svg(type="file",multiple,name="svg",onchange="angular.element(this).scope().gh.new.n.svg.set(this)")
+    .col-sm-7
+      .form
+        .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.name.p]")
+          .form-label
+            | Icon Name
+            i.required
+          .form-input: input(type="text",name="name", placeholder="Icon Name",ng-model="gh.new.n.name.v")
+        .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.author.p]")
+          .form-label
+            | Author Name
+            i.required
+          .form-input: input(type="text",name="author", placeholder="Author",ng-model="gh.new.n.author.v")
+        .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.author_url.p]")
+          .form-label Author URL
+          .form-input: input(type="text",name="author_url", placeholder="URL to Author",ng-model="gh.new.n.author_url.v")
+        .form-row(ng-class="{true:'',false:'invalid'}[gh.new.n.license.p]")
+          .form-label
+            | License
+            i.required
+          .form-input
+            license(ng-model="gh.new.n.license.v",name="license")
+            i.glyphicon.glyphicon-plus(ng-click="lc.init()")
+      small tags
+      .invalid-self(ng-class="{true:'',false:'invalid'}[gh.new.n.tags.p]")
+        tags(ng-model="gh.new.n.tags.v", name="tags")
+  | (
+  i.required
+  | : required )
+  | {% endverbatim %}

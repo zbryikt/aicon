@@ -25,3 +25,5 @@ $ \.tags .select2 do
   data: []
   createSearchChoice: (term,data) ->
     if data.filter(-> (it.text.locale-compare term)==0).length==0 => return {id:term, text:term}
+
+$(\.ui.dropdown)dropdown!

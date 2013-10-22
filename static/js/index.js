@@ -46,7 +46,7 @@ $(document).ready(function(){
       return it;
     }
   });
-  return $('.tags').select2({
+  $('.tags').select2({
     tokenSeparators: [",", " "],
     multiple: true,
     data: [],
@@ -61,4 +61,5 @@ $(document).ready(function(){
       }
     }
   });
+  return $('.ui.dropdown').dropdown();
 });

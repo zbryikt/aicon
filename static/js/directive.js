@@ -7,7 +7,7 @@ angular.module('utils', []).directive('tags', function($compile){
       "model": '=ngModel',
       name: '@'
     },
-    template: "<input type='hidden' class='tags'>",
+    template: "<input type='hidden' class='tags' placeholder='add tags...'>",
     link: function(scope, element, attrs){
       $(element).select2({
         tokenSeparators: [",", " "],
@@ -124,7 +124,7 @@ angular.module('utils', []).directive('tags', function($compile){
       });
       return attrs.$observe('src', function(v){
         if (v) {
-          return element.find('.object').replaceWith("<object class='object' type='image/svg+xml' data='/m/" + v + "'></object>");
+          return element.find('.object').replaceWith("<iframe class='object' src='/m/" + v + "'></iframe>");
         } else {
           return element.find('.object').replaceWith("<div class='object'>no data</div>");
         }

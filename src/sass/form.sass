@@ -1,0 +1,50 @@
+@import base
+
+input
+  font-family: $font
+
+.license-chooser
+  width: 100%
+
+.txags
+  width: 100%
+  min-height: 30px
+  .select2-choices
+    border: none
+    background: #fdfdfd
+    box-shadow: inset 0 1px 5px rgba(0,0,0,0.1)
+
+.required
+  &:after
+    color: #f02
+    content: "*"
+
+.pxy
+  display: none
+
+.form-input
+  .glyphicon-plus
+    @include act-icon
+    position: absolute
+    top: 10px
+    right: 0px
+    margin-left:  5px
+    color: #090
+
+.invalid input
+  outline: 1px solid #f00
+  box-shadow: 0 0 8px rgba(255,0,0,0.9)
+.invalid .select2-choice, .invalid-self.invalid
+  border: 1px solid #f00
+  box-shadow: 0 0 5px rgba(255,0,0,0.9)
+
+.error-hint
+  display: none
+  float: left
+  color: #d95c5c
+  margin: 8px 0 0
+  .glyphicon-remove
+    color: #c02
+    vertical-align: text-top
+    margin: 1px 3px 0 0
+

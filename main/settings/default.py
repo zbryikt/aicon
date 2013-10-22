@@ -223,6 +223,9 @@ REST_FRAMEWORK = {
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
+order_css = ['static/v/css/semantic.css', 'static/v/css/select2.css']
+vendor_css = (glob.glob('static/v/css/*.css'))
+
 PIPELINE_CSS = {
   'main': {
     'source_filenames': (
@@ -232,9 +235,9 @@ PIPELINE_CSS = {
     'variant': 'datauri',
   },
   'vendor': {
-    'source_filenames': (
-      'v/css/*.css',
-    ),
+    'source_filenames':
+      map(lambda x:re.sub(r"^static/", "", x), order_css + filter(lambda x: not x in order_css, vendor_css)),
+      #('v/css/*.css'),
     'output_filename': 'css/vendor.css'
   },
 }

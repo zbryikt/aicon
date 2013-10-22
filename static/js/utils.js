@@ -10,5 +10,50 @@ utils = {
       }
       return results$;
     }()).join("&");
+  },
+  svg: {
+    ns: "http://www.w3.org/2000/svg",
+    color: function(node, c){
+      var doc, r, svg, x$, bk, y$, mask, i$, ref$, len$, it;
+      doc = node.contentDocument || node[0].contentDocument;
+      r = $(doc).find('#svg-clr');
+      if (r.length) {
+        return r.css({
+          fill: c
+        });
+      }
+      svg = $(doc.querySelectorAll("svg")[0]);
+      x$ = bk = $(doc.createElementNS(this.ns, "rect"));
+      x$.attr({
+        x: 0,
+        y: 0,
+        width: '102%',
+        height: '201%',
+        style: 'fill:#fff'
+      });
+      y$ = mask = $(doc.createElementNS(this.ns, "mask"));
+      y$.attr('id', 'svg-mask').append(bk);
+      for (i$ = 0, len$ = (ref$ = svg.children()).length; i$ < len$; ++i$) {
+        it = ref$[i$];
+        it.remove();
+        mask.append(it);
+      }
+      svg.append(mask);
+      svg.append($(doc.createElementNS(this.ns, "rect")).attr({
+        x: 0,
+        y: 0,
+        width: '100%',
+        height: '100%',
+        style: "fill:" + c,
+        id: 'svg-clr'
+      }));
+      return svg.append($(doc.createElementNS(this.ns, "rect")).attr({
+        x: 0,
+        y: 0,
+        width: '101%',
+        height: '101%',
+        style: 'fill:#fff;mask:url(#svg-mask)'
+      }));
+    }
   }
 };

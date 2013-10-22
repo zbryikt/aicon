@@ -9,15 +9,15 @@ html
     | {% compressed_js 'main' %}
   body(ng-app="main", ng-controller="main",ng-mousedown="mouse.select=true",ng-mouseup="mouse.select=false",sty)
     .ui.menu.red.inverted.fixed.main
-      div(style="width:1024px;margin:0 auto")
+      .inner-menu(style="width:1024px;margin:0 auto")
         a.active.item
           i.home.icon
           | Home
-        a.item
-          i.icon.upload
+        a.item(ng-click="gh.new.init()")
+          i.icon.cloud.upload
           | upload
-        a.item
-          i.icon.download
+        a.item(ng-click="buildFont()")
+          i.icon.disk.download
           | make font
         .right.menu
           a.item
@@ -26,10 +26,16 @@ html
           a.item
             i.icon.add.sign.box.icon
             | Sign up
+    #banner
+      span(style="font-size:48px;position:absolute;color:#fff;top: 270px;left: 600px;font-family:times new roman")
+        | AICON
+        small /`aikon/
+      span(style="font-size:18px;position:absolute;color:#fff;top: 335px;left: 600px;font-family:century gothic") create, build and share your icon font online
     #content(style="width: 1024px; margin: 0 auto")
-      .ib(style="padding-top: 59px")  
+      .ib(style="padding-top: 20px")  
+      | {% include 'glyph/new-modal.jade' %}
       .ui.icon.input.large.fluid
-        input(type="text",placeholder="Search Icons...")
+        input(type="text",placeholder="Search Icons...",ng-model="searchKeyword")
         i.search.icon
 
       .ui.small.secondary.menu
@@ -45,22 +51,42 @@ html
         a.item
           i.icon.pencil
           | my upload
-        a.item
+        //-a.item
           i.icon.text.file.outline
           | history
-        a.item
+        //-a.item
           i.icon.folder
           | packs
-        .ui.dropdown.item
-          i.icon.open.folder
-          | set / untitled
-          i.dropdown.icon
-          .menu
-            a.item iconpack
-            a.item g0v
-            a.item android
-            a.item myset
-            a.item untitled
+        .right.menu
+          .ui.dropdown.item
+            i.icon.open.folder
+            | {% verbatim %}
+            | selections - {{ st.name }}
+            small ({{st.len}})
+            | {% endverbatim %}
+            i.dropdown.icon
+            .menu.iconset
+              a.item(ng-click="st.new()")
+                icon(src="/m/default/new.svg")
+                | create new set
+              | {% verbatim %}
+              a.item(ng-repeat="s in st.sets",ng-click="st.load(s)",ng-class="{true:'active',false:''}[st.cur.pk==s.pk]")
+                icon(src="{{s.cover}}",del="st.rmset(e,s)")
+                | {{ s.name }}
+                small ( {{ s.icons.length }} )
+              | {% endverbatim %}
+            //-    
+              .ico-li-it(ng-repeat="s in st.sets",ng-click="st.load(s)",ng-class="{true:'active',false:''}[st.cur.pk==s.pk]")
+                icon(src="{{s.cover}}",del="st.rmset(e,s)")
+                .name {{s.name}}
+                br
+                .count {{s.icons.length}} icons
+                a.item iconpack
+                a.item g0v
+                a.item android
+                a.item myset
+                a.item untitled
+
       .ui.divider
       #icon-hint.ui.pointing.below.label
         | "arrow", by
@@ -72,7 +98,17 @@ html
         i.icon.double.angle.right
         | 
       | {% verbatim %}
-      .ui.ribbon.label aicon default
+      .ui.ribbon.label.large.red aicon default
+      .ui.label.pointing.left.small(style="margin-left: -25px")
+        | by
+        .ui.dropdown
+          .text name
+          i.icon.dropdown
+          .menu
+            .item author
+            .item time
+            .item license
+
       br
       .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
         icon.ico-main(src="{{g.svg}}")
@@ -85,6 +121,8 @@ html
       .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
         icon.ico-main(src="{{g.svg}}")
       | {% endverbatim %}
+    #footer
+      | 愛 Aicon
     //-
       #header
         img#logo(src="/s/img/logo.png")

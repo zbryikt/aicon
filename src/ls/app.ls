@@ -1,6 +1,7 @@
 angular.module \main, <[ui.select2 utils]>
 .config ($httpProvider) ->
   $httpProvider.defaults.headers.common["X-CSRFToken"] = $.cookie \csrftoken
+  $.fn.modal.settings.selector.close = "-nop-"
 
 if typeof String.prototype.trim === "undefined"
     String.prototype.trim = ->
@@ -131,6 +132,8 @@ main = ($scope, $http) ->
               $ \#glyph-new-modal .modal \hide
               return $scope.qr.load!
             else $ '#glyph-new-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
+            console.log "1>>",($scope.gh.new.list.data.map -> it.id)
+            console.log "2>>",(pks)
             $scope.$apply ~> $scope.gh.new.list.data = $scope.gh.new.list.data.filter -> !(it.id in pks)
         item:
           data: {}
@@ -139,6 +142,7 @@ main = ($scope, $http) ->
             if (for k of @data{name,author,license,tags} =>
               !@data[k].p = if !@data[k].v => false else true
             )filter(->it).length>0 =>
+              if not ( $ \#glyph-new-svg .val! ) => @data.svg.p = false
               return $ '#glyph-new-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
             if not ( $ \#glyph-new-svg .val! ) => return @data.svg.p = false
             $scope.gh.new.h.set @callback
@@ -157,6 +161,7 @@ main = ($scope, $http) ->
               $scope.gh.modal.title = "Edit Icons Detail"
             $ "\#glyph-new-modal .multiple" .show!
             $ "\#glyph-new-modal .single" .hide!
+            $ \#glyph-new-modal .modal \refresh
         init-data:
           # p: check passed / v: value
           name:       { p: true, v: "" }

@@ -1,10 +1,10 @@
 angular.module \utils, <[]>
 .directive \tags ($compile) ->
-  return 
+  return
     restrict: 'E'
     replace: true
     scope: {"model": '=ngModel', name: '@'}
-    template: "<input type='hidden' class='tags'>"
+    template: "<input type='hidden' class='tags' placeholder='add tags...'>"
     link: (scope, element, attrs) ->
       $ element .select2 do
         tokenSeparators: [",", " "]
@@ -15,7 +15,7 @@ angular.module \utils, <[]>
       .on \change (e) -> scope.$apply -> scope.model = $ element .select2 \data
       scope.$watch \model (v) -> $ element .select2 \data,  v
 .directive \license ($compile) ->
-  return 
+  return
     restrict: 'E'
     replace: true
     scope: {"model": '=ngModel', name: '@'}
@@ -59,6 +59,7 @@ angular.module \utils, <[]>
           ..show!
           ..css top: "#{p.top - n.outerHeight!}px", left: "#{element.width! / 2 + p.left - n.outerWidth! / 2}px"
       attrs.$observe \src, (v) ->
-        if v => element.find \.object .replaceWith "<object class='object' type='image/svg+xml' data='/m/#{v}'></object>"
+        # if in <object>:
+        # if v => element.find \.object .replaceWith "<object class='object' type='image/svg+xml' data='/m/#{v}'></object>"
+        if v => element.find \.object .replaceWith "<iframe class='object' src='/m/#{v}'></iframe>"
         else element.find \.object .replaceWith "<div class='object'>no data</div>"
-
