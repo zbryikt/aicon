@@ -28,6 +28,8 @@ class BuildFontView(View):
   def post(self, request, *args, **kwargs):
     try: pk_list = json.loads(request.body)
     except: pk_list = []
+    print(request.body)
+    print(pk_list)
     if len(pk_list)<=0: return redirect("/")
     pk = [int(x) for x in pk_list]
     att = []
@@ -247,6 +249,7 @@ class IconsetView(utils.RestView):
     except: iconset = Iconset.objects.create(user=request.user)
     if data.get("name"): iconset.name = data["name"]
     iconset.save()
+    data["pk"] = iconset.pk
     for gpk in data["icons"]:
       c = Choice.objects.filter(Q(glyph__pk=gpk) & Q(iconset=iconset))
       if len(c): continue

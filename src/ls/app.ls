@@ -20,38 +20,66 @@ main = ($scope, $http) ->
       detail: true
     st:
       sets: []
-      init: -> $http.get \/iconset/ .success (d) ~> @sets = d
+      init: -> $http.get \/iconset/ .success (d) ~>
+        @sets = d
+        @chk!
       len: 0
       name: "圖示集"
       list: {}
+      show: false
       cur: icons: [] name: "圖示集" pk: -1
+      chk: (rmed=null) ->
+        if !@sets.length => @new!
+        if !rmed or rmed==@cur => @load @sets.0
       rmset: (e, s) ->
         if s and s.pk>=0 =>
           $http.delete "/iconset/#{s.pk}"
-          .success (d) ~> if @sets.indexOf(s) + 1 => @sets.splice(that - 1, 1)
-        else if @sets.indexOf(s) + 1 => @sets.splice(that - 1, 1)
-
-
+          .success (d) ~>
+            if @sets.indexOf(s) + 1 => @sets.splice(that - 1, 1)
+            @chk s
+        else if @sets.indexOf(s) + 1 =>
+          @sets.splice(that - 1, 1)
+          @chk s
+      toggle: ->
+        @show = !@show
+        if @show => $ ".ico-li.iconset .ib" .show!
+        else $ ".ico-li.iconset .ib" .hide!
       add: (g) ->
-        console.log \added
-        if (g.added = if @list[g.pk] => delete @list[g.pk] and false else (@list[g.pk] = g) and true) => @len++ and that
+        if (g.added = if @list[g.pk] => @len-- and delete @list[g.pk] and false else (@list[g.pk] = g) and true) => @len++ and that
+        @save-buf!
       clean: -> [k for k of @list]map ~>
         @list[it]added = false
         delete @list[it]
         @len--
       rand-name: -> <[圖示集 我的集合 尚未命名 還沒取名 新集合 超棒列表]>[parseInt Math.random!* *]
-      new: -> @sets.push @load cover: "default/unknown.svg", icons: [], name: @rand-name!, pk: -1
+      new-count: 0
+      new: ->
+        @sets.push @load cover: "default/unknown.svg", icons: [], name: @rand-name!, pk: --@new-count
       load: (s) ->
+        @save!
         @clean!
         @cur = s
         @name = s.name
         s.icons.map ~> @add $scope.gh.item it.pk, it
         s
+      save-timer: null
+      save-buf: ->
+        if @save-timer => clearTimeout @save-timer
+        @save-timer = setTimeout ~>
+          @save-timer = null
+          @save!
+        , 5000
       save: ->
+        if @save-timer =>
+          clearTimeout @save-timer
+          @save-timer = null
         if !@len => return
         @cur{name,icons} = {name: @name, icons: []}
         [k for k of @list]map ~> @cur.icons.push @list[it]
+        des = @cur
         $http.post \/iconset/, {pk: @cur.pk, name: @name, icons: [k for k of @list]map(~>@list[it]pk)}
+        .success (d) ~>
+          if des.pk == -1 => des.pk = d.pk
 
     qr:
       keyword: ""
@@ -132,8 +160,6 @@ main = ($scope, $http) ->
               $ \#glyph-new-modal .modal \hide
               return $scope.qr.load!
             else $ '#glyph-new-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
-            console.log "1>>",($scope.gh.new.list.data.map -> it.id)
-            console.log "2>>",(pks)
             $scope.$apply ~> $scope.gh.new.list.data = $scope.gh.new.list.data.filter -> !(it.id in pks)
         item:
           data: {}

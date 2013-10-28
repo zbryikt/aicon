@@ -61,5 +61,7 @@ $(document).ready(function(){
       }
     }
   });
-  return $('.ui.dropdown').dropdown();
+  $('.ui.dropdown').dropdown();
+  $('.ui.dropdown.iconset-list').dropdown().dropdown('setting', 'action', 'hide');
+  return $('.has-popup').popup();
 });

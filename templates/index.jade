@@ -27,11 +27,11 @@ html
             i.icon.add.sign.box.icon
             | Sign up
     #banner
-      span(style="font-size:48px;position:absolute;color:#fff;top: 270px;left: 600px;font-family:times new roman")
+      #bnr-h1
         | AICON
         small /`aikon/
-      span(style="font-size:18px;position:absolute;color:#fff;top: 335px;left: 600px;font-family:century gothic") create, build and share your icon font online
-    #content(style="width: 1024px; margin: 0 auto")
+      #bnr-h2 create, build and share your icon font online
+    #content
       .ib(style="padding-top: 20px")  
       | {% include 'glyph/new-modal.jade' %}
       .ui.icon.input.large.fluid
@@ -51,14 +51,8 @@ html
         a.item
           i.icon.pencil
           | my upload
-        //-a.item
-          i.icon.text.file.outline
-          | history
-        //-a.item
-          i.icon.folder
-          | packs
         .right.menu
-          .ui.dropdown.item
+          .ui.dropdown.item.iconset-list
             i.icon.open.folder
             | {% verbatim %}
             | selections - {{ st.name }}
@@ -67,7 +61,7 @@ html
             i.dropdown.icon
             .menu.iconset
               a.item(ng-click="st.new()")
-                icon(src="/m/default/new.svg")
+                icon(src="default/new.svg")
                 | create new set
               | {% verbatim %}
               a.item(ng-repeat="s in st.sets",ng-click="st.load(s)",ng-class="{true:'active',false:''}[st.cur.pk==s.pk]")
@@ -75,19 +69,14 @@ html
                 | {{ s.name }}
                 small ( {{ s.icons.length }} )
               | {% endverbatim %}
-            //-    
-              .ico-li-it(ng-repeat="s in st.sets",ng-click="st.load(s)",ng-class="{true:'active',false:''}[st.cur.pk==s.pk]")
-                icon(src="{{s.cover}}",del="st.rmset(e,s)")
-                .name {{s.name}}
-                br
-                .count {{s.icons.length}} icons
-                a.item iconpack
-                a.item g0v
-                a.item android
-                a.item myset
-                a.item untitled
+          a.item(ng-click="st.toggle()",style="width:87px;text-align:right")
+            span(ng-show="st.show")
+              | hide
+              i.icon.arrow.up
+            span(ng-show="!st.show")
+              | show
+              i.icon.arrow.down
 
-      .ui.divider
       #icon-hint.ui.pointing.below.label
         | "arrow", by
         a(href="#") tkirby
@@ -98,6 +87,21 @@ html
         i.icon.double.angle.right
         | 
       | {% verbatim %}
+      .ico-li.iconset
+        .ui.divider
+        .ctrls(ng-show="st.show")
+          span.name {{ st.name }}
+          i.icon.edit.sign.has-popup(data-content="edit name")
+          i.icon.trash.has-popup(ng-click="st.rmset(e, st.cur)",data-content="remove set")
+        .ellipsis(ng-click="st.toggle()")
+          i.icon.ellipsis.horizontal
+          span your selection
+          i.icon.ellipsis.horizontal
+        .ib
+          .when-empty(ng-show="st.len==0") ( empty )
+          .ico-li-it(ng-repeat="g in st.list")
+            icon(src="{{g.svg}}",del="st.add(g)")
+        .ui.divider
       .ui.ribbon.label.large.red aicon default
       .ui.label.pointing.left.small(style="margin-left: -25px")
         | by
@@ -115,7 +119,7 @@ html
       | {% endverbatim %}
       br(style="clear:both")
       br
-      .ui.ribbon.label editor's choice
+      .ui.ribbon.label.red editor's choice
       br
       | {% verbatim %}
       .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")

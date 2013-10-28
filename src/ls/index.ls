@@ -27,3 +27,5 @@ $ \.tags .select2 do
     if data.filter(-> (it.text.locale-compare term)==0).length==0 => return {id:term, text:term}
 
 $(\.ui.dropdown)dropdown!
+$(\.ui.dropdown.iconset-list)dropdown!dropdown \setting, \action, \hide
+$(\.has-popup)popup!

@@ -31,16 +31,27 @@ main = function($scope, $http){
       init: function(){
         var this$ = this;
         return $http.get('/iconset/').success(function(d){
-          return this$.sets = d;
+          this$.sets = d;
+          return this$.chk();
         });
       },
       len: 0,
       name: "圖示集",
       list: {},
+      show: false,
       cur: {
         icons: [],
         name: "圖示集",
         pk: -1
+      },
+      chk: function(rmed){
+        rmed == null && (rmed = null);
+        if (!this.sets.length) {
+          this['new']();
+        }
+        if (!rmed || rmed === this.cur) {
+          return this.load(this.sets[0]);
+        }
       },
       rmset: function(e, s){
         var that, this$ = this;
@@ -48,21 +59,31 @@ main = function($scope, $http){
           return $http['delete']("/iconset/" + s.pk).success(function(d){
             var that;
             if (that = this$.sets.indexOf(s) + 1) {
-              return this$.sets.splice(that - 1, 1);
+              this$.sets.splice(that - 1, 1);
             }
+            return this$.chk(s);
           });
         } else if (that = this.sets.indexOf(s) + 1) {
-          return this.sets.splice(that - 1, 1);
+          this.sets.splice(that - 1, 1);
+          return this.chk(s);
+        }
+      },
+      toggle: function(){
+        this.show = !this.show;
+        if (this.show) {
+          return $(".ico-li.iconset .ib").show();
+        } else {
+          return $(".ico-li.iconset .ib").hide();
         }
       },
       add: function(g){
         var that, ref$, key$, ref1$;
-        console.log('added');
         if (that = g.added = this.list[g.pk]
-          ? (ref1$ = (ref$ = this.list)[key$ = g.pk], delete ref$[key$], ref1$) && false
+          ? this.len-- && (ref1$ = (ref$ = this.list)[key$ = g.pk], delete ref$[key$], ref1$) && false
           : (this.list[g.pk] = g) && true) {
-          return this.len++ && that;
+          this.len++ && that;
         }
+        return this.saveBuf();
       },
       clean: function(){
         var k, this$ = this;
@@ -82,16 +103,18 @@ main = function($scope, $http){
         var ref$;
         return (ref$ = ['圖示集', '我的集合', '尚未命名', '還沒取名', '新集合', '超棒列表'])[parseInt(Math.random() * ref$.length)];
       },
+      newCount: 0,
       'new': function(){
         return this.sets.push(this.load({
           cover: "default/unknown.svg",
           icons: [],
           name: this.randName(),
-          pk: -1
+          pk: --this.newCount
         }));
       },
       load: function(s){
         var this$ = this;
+        this.save();
         this.clean();
         this.cur = s;
         this.name = s.name;
@@ -100,8 +123,23 @@ main = function($scope, $http){
         });
         return s;
       },
+      saveTimer: null,
+      saveBuf: function(){
+        var this$ = this;
+        if (this.saveTimer) {
+          clearTimeout(this.saveTimer);
+        }
+        return this.saveTimer = setTimeout(function(){
+          this$.saveTimer = null;
+          return this$.save();
+        }, 5000);
+      },
       save: function(){
-        var ref$, ref1$, k, this$ = this;
+        var ref$, ref1$, k, des, this$ = this;
+        if (this.saveTimer) {
+          clearTimeout(this.saveTimer);
+          this.saveTimer = null;
+        }
         if (!this.len) {
           return;
         }
@@ -118,6 +156,7 @@ main = function($scope, $http){
         }.call(this)).map(function(it){
           return this$.cur.icons.push(this$.list[it]);
         });
+        des = this.cur;
         return $http.post('/iconset/', {
           pk: this.cur.pk,
           name: this.name,
@@ -130,6 +169,10 @@ main = function($scope, $http){
           }.call(this)).map(function(it){
             return this$.list[it].pk;
           })
+        }).success(function(d){
+          if (des.pk === -1) {
+            return des.pk = d.pk;
+          }
         });
       }
     },
@@ -357,10 +400,6 @@ main = function($scope, $http){
             } else {
               $('#glyph-new-modal .error-hint.missed').show().delay(2000).fadeOut(1000);
             }
-            console.log("1>>", $scope.gh['new'].list.data.map(function(it){
-              return it.id;
-            }));
-            console.log("2>>", pks);
             return $scope.$apply(function(){
               return $scope.gh['new'].list.data = $scope.gh['new'].list.data.filter(function(it){
                 return !in$(it.id, pks);

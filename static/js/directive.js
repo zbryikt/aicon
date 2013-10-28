@@ -111,17 +111,12 @@ angular.module('utils', []).directive('tags', function($compile){
       if (!attrs.del) {
         element.find('.delete').remove();
       }
-      element.on('mouseover', function(e){
-        var p, x$, n;
-        p = element.offset();
-        x$ = n = $('#icon-hint');
-        x$.show();
-        x$.css({
-          top: (p.top - n.outerHeight()) + "px",
-          left: (element.width() / 2 + p.left - n.outerWidth() / 2) + "px"
-        });
-        return x$;
-      });
+      /*element.on \mouseover, (e) ->
+        p = element.offset!
+        n = $ \#icon-hint
+          ..show!
+          ..css top: "#{p.top - n.outerHeight!}px", left: "#{element.width! / 2 + p.left - n.outerWidth! / 2}px"
+      */
       return attrs.$observe('src', function(v){
         if (v) {
           return element.find('.object').replaceWith("<iframe class='object' src='/m/" + v + "'></iframe>");
