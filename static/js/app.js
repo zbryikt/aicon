@@ -258,7 +258,7 @@ main = function($scope, $http){
       },
       init: function(){
         this['new'].init();
-        return $('#lic-new-modal').modal('show');
+        return $('#lic-new-modal').modal('setting', 'closable', false).modal('show').show();
       },
       'new': {
         item: {},
@@ -295,15 +295,19 @@ main = function($scope, $http){
           });
         },
         save: function(){
+          var this$ = this;
           this.trim();
-          if (!this.item.name.v) {
-            $('#lic-new-modal .error-hint.missed').show().delay(2000).fadeOut(1000);
-            return this.item.name.p = false;
+          if (['name', 'desc'].map(function(it){
+            return this$.item[it].p = !!this$.item[it].v;
+          }).filter(function(it){
+            return !it;
+          }).length) {
+            return $('#lic-new-modal .error-hint.missed').show().delay(2000).fadeOut(1000);
           }
-          $('#lic-form-pxy').load(function(){
-            return $('#lic-new-modal').modal('hide');
+          $('#lic-new-form-pxy').load(function(){
+            return $('#lic-new-modal').hide();
           });
-          return $('#lic-form').submit();
+          return $('#lic-new-form').submit();
         }
       }
     },
@@ -367,7 +371,7 @@ main = function($scope, $http){
           this.list.data = [];
           $scope.gh.modal.title = "Upload Icons";
           this.n = this.item.data = $.extend(true, {}, import$({}, this.initData));
-          x$ = $('#glyph-new-modal').modal('show');
+          x$ = $('#glyph-new-modal').modal('setting', 'context', '#footer').modal('setting', 'closable', false).modal('show');
           x$.find('.single').show();
           x$.find('.multiple').hide();
           return x$;

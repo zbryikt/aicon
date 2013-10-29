@@ -106,7 +106,7 @@ main = ($scope, $http) ->
           d.map ~> if !@hash[it.pk] => @item it.pk, it
       init: ->
         @new.init!
-        $ \#lic-new-modal .modal \show
+        $ \#lic-new-modal .modal \setting, \closable, false .modal \show .show!
 
       new:
         item: {}
@@ -115,11 +115,12 @@ main = ($scope, $http) ->
         trim: -> <[name desc url]>map ~> if @item[it]v => @item[it]v = that.trim!
         save: ->
           @trim!
-          if !@item.name.v =>
-            $ '#lic-new-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
-            return @item.name.p=false #TODO: check if angular support validation
-          $ \#lic-form-pxy .load -> $ \#lic-new-modal .modal \hide
-          $ \#lic-form .submit!
+          if <[name desc]>map(~> @item[it]p = !!@item[it]v)filter(->!it)length =>
+            return $ '#lic-new-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
+          $ \#lic-new-form-pxy .load ->
+            #$ \#lic-new-modal .modal \hide
+            $ \#lic-new-modal .hide!
+          $ \#lic-new-form .submit!
 
     gh:
       list: []
@@ -143,7 +144,8 @@ main = ($scope, $http) ->
           @list.data = []
           $scope.gh.modal.title = "Upload Icons"
           @n = @item.data = $.extend true, {}, {} <<< @init-data
-          $ \#glyph-new-modal .modal \show
+          #$ \#glyph-new-modal .modal \setting, \closable, false .modal \show
+          $ \#glyph-new-modal .modal \setting, \context, \#footer  .modal \setting, \closable, false .modal \show
             ..find \.single .show!
             ..find \.multiple .hide!
         list:

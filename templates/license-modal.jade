@@ -1,53 +1,109 @@
-iframe.pxy#lic-form-pxy(name="lic-form-pxy",height="0",width="0")
-form#lic-form(enctype="multipart/form-data",method="post",target="lic-form-pxy",action="/license/")
-  | {% csrf_token %}
-  | {% verbatim %}
-  #lic-new-modal.modal.fade: .modal-dialog: .modal-content
-    .modal-header
-      button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
-      h4.modal-title Add New License Type
-    .modal-body
-      .form
-        .form-row(ng-class="{true:'',false:'invalid'}[lc.new.item.name.p]")
-          .form-label
-            | License Name
-            i.required
-          .form-input: input.form-control(type="text",name="name", placeholder="License Name",ng-model="lc.new.item.name.v")
-        .form-row
-          .form-label Description
-          .form-input: textarea.form-control(type="text",name="desc", placeholder="Description",ng-model="lc.new.item.desc.v")
-        .form-row
-          .form-label License URL
-          .form-input: input.form-control(type="text",name="url", placeholder="License URL",ng-model="lc.new.item.url.v")
-        .form-row
-          .form-label Type
-          .form-input
+iframe.pxy#lic-new-form-pxy(name="lic-new-form-pxy",height="0",width="0")
+#lic-new-modal.ui.modal
+  .header
+    | {% verbatim %}
+    | Create New License
+    | {% endverbatim %}
+  .content
+    form#lic-new-form(enctype="multipart/form-data",method="post",target="lic-new-form-pxy",action="/license/")
+      | {% csrf_token %}
+      .ui.form.segment
+        .two.fields
+          .field(ng-class="{true:'',false:'error'}[lc.new.item.name.p]")
+            label License Name
+            input(type="text",name="name", placeholder="License Name",ng-model="lc.new.item.name.v")
+          .field
+            label License URL (optional)
+            input(type="text",name="url", placeholder="License URL",ng-model="lc.new.item.url.v")
+        .two.fields
+          .field(ng-class="{true:'',false:'error'}[lc.new.item.desc.p]")
+            label Description
+            textarea(type="text",name="desc", placeholder="Description",ng-model="lc.new.item.desc.v")
+          .field
+            label Type
             .ib
-              input(type="checkbox",name="public_domain", placeholder="license",ng-model="lc.new.item.pd")
-              |  Public Domain
-            .ib(style="float:left;width: 50%")
-              input(type="checkbox",name="attribution", placeholder="license",ng-model="lc.new.item.at")
-              |  Attribution
-              br
-              input(type="checkbox",name="sharealike", placeholder="license",ng-model="lc.new.item.sa")
-              |  Share Alike
-              br
-            .ib(style="float:left;width: 50%")
-              input(type="checkbox",name="no_derive", placeholder="license",ng-model="lc.new.item.nd")
-              |  No Derive
-              br
-              input(type="checkbox",name="no_commercial", placeholder="license",ng-model="lc.new.item.nc")
-              |  No Commercial
-        .form-row
-          .form-label License File
-          .form-input: input(type="file",name="file",placholder="optional")
-      | (
-      i.required
-      | : required )
-    .modal-footer
-      .error-hint.missed
-        i.glyphicon.glyphicon-remove
-        | Some fields are invalid. Please fix them.
-      label.btn.btn-primary(ng-click="lc.new.save()") Create
-      label.btn.btn-default(data-dismiss="modal") Cancel
-  | {% endverbatim %}
+              .iib
+                input(type="checkbox",name="public_domain", placeholder="license",ng-model="lc.new.item.pd")
+                |  Public Domain
+                br
+                input(type="checkbox",name="attribution", placeholder="license",ng-model="lc.new.item.at")
+                |  Attribution
+                br
+                input(type="checkbox",name="sharealike", placeholder="license",ng-model="lc.new.item.sa")
+                |  Share Alike
+              .iib
+                input(type="checkbox",name="no_commercial", placeholder="license",ng-model="lc.new.item.nc")
+                |  No Commercial
+                br
+                input(type="checkbox",name="no_derive", placeholder="license",ng-model="lc.new.item.nd")
+                |  No Derive
+
+        .field
+          label License File (optional)
+          input(type="file",name="file",placholder="optional")
+
+  .actions
+    .error-hint.error
+      i.glyphicon.glyphicon-remove
+      | Some error occurred. Please try again later.
+    .error-hint.missed
+      i.glyphicon.glyphicon-remove
+      | Some fields are invalid. Please fix them.
+    .ui.button(onclick="$('#lic-new-modal').removeClass('active visible');") Cancel
+    .ui.button.green(ng-click="lc.new.save()") Upload
+
+
+//-
+  iframe.pxy#lic-form-pxy(name="lic-form-pxy",height="0",width="0")
+  form#lic-form(enctype="multipart/form-data",method="post",target="lic-form-pxy",action="/license/")
+    | {% csrf_token %}
+    | {% verbatim %}
+    #lic-new-modal.modal.fade: .modal-dialog: .modal-content
+      .modal-header
+        button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+        h4.modal-title Add New License Type
+      .modal-body
+        .form
+          .form-row(ng-class="{true:'',false:'invalid'}[lc.new.item.name.p]")
+            .form-label
+              | License Name
+              i.required
+            .form-input: input.form-control(type="text",name="name", placeholder="License Name",ng-model="lc.new.item.name.v")
+          .form-row
+            .form-label Description
+            .form-input: textarea.form-control(type="text",name="desc", placeholder="Description",ng-model="lc.new.item.desc.v")
+          .form-row
+            .form-label License URL
+            .form-input: input.form-control(type="text",name="url", placeholder="License URL",ng-model="lc.new.item.url.v")
+          .form-row
+            .form-label Type
+            .form-input
+              .ib
+                input(type="checkbox",name="public_domain", placeholder="license",ng-model="lc.new.item.pd")
+                |  Public Domain
+              .ib(style="float:left;width: 50%")
+                input(type="checkbox",name="attribution", placeholder="license",ng-model="lc.new.item.at")
+                |  Attribution
+                br
+                input(type="checkbox",name="sharealike", placeholder="license",ng-model="lc.new.item.sa")
+                |  Share Alike
+                br
+              .ib(style="float:left;width: 50%")
+                input(type="checkbox",name="no_derive", placeholder="license",ng-model="lc.new.item.nd")
+                |  No Derive
+                br
+                input(type="checkbox",name="no_commercial", placeholder="license",ng-model="lc.new.item.nc")
+                |  No Commercial
+          .form-row
+            .form-label License File
+            .form-input: input(type="file",name="file",placholder="optional")
+        | (
+        i.required
+        | : required )
+      .modal-footer
+        .error-hint.missed
+          i.glyphicon.glyphicon-remove
+          | Some fields are invalid. Please fix them.
+        label.btn.btn-primary(ng-click="lc.new.save()") Create
+        label.btn.btn-default(data-dismiss="modal") Cancel
+    | {% endverbatim %}

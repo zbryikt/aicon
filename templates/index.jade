@@ -20,12 +20,9 @@ html
           i.icon.disk.download
           | make font
         .right.menu
-          a.item
+          a.item(onclick="$('#login-modal').modal('setting','closable',false).modal('show');")
             i.icon.sign.in.icon
             | Sign in
-          a.item
-            i.icon.add.sign.box.icon
-            | Sign up
     #banner
       #bnr-h1
         | AICON
@@ -34,6 +31,9 @@ html
     #content
       .ib(style="padding-top: 20px")  
       | {% include 'glyph/new-modal.jade' %}
+      | {% include 'license-modal.jade' %}
+      | {% include 'iconset-modal.jade' %}
+      | {% include 'login-modal.jade' %}
       .ui.icon.input.large.fluid
         input(type="text",placeholder="Search Icons...",ng-model="searchKeyword")
         i.search.icon
@@ -41,10 +41,7 @@ html
       .ui.small.secondary.menu
         a.active.item
           i.icon.trophy
-          | official
-        a.item
-          i.icon.time
-          | latest
+          | default
         a.item
           i.icon.user
           | by author
@@ -91,7 +88,7 @@ html
         .ui.divider
         .ctrls(ng-show="st.show")
           span.name {{ st.name }}
-          i.icon.edit.sign.has-popup(data-content="edit name")
+          i.icon.edit.sign.has-popup(data-content="edit name",onclick="$('#ics-edit-modal').modal('show');")
           i.icon.trash.has-popup(ng-click="st.rmset(e, st.cur)",data-content="remove set")
         .ellipsis(ng-click="st.toggle()")
           i.icon.ellipsis.horizontal
@@ -114,17 +111,22 @@ html
             .item license
 
       br
+     
       .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
         icon.ico-main(src="{{g.svg}}")
       | {% endverbatim %}
+
       br(style="clear:both")
       br
-      .ui.ribbon.label.red editor's choice
-      br
-      | {% verbatim %}
-      .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
-        icon.ico-main(src="{{g.svg}}")
-      | {% endverbatim %}
+      //-
+        .ui.ribbon.label.red editor's choice
+        br
+        | {% verbatim %}
+        .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
+          icon.ico-main(src="{{g.svg}}")
+
+        | {% endverbatim %}
+
     #footer
       | 愛 Aicon
     //-
@@ -182,34 +184,36 @@ html
       | {% include 'glyph/edit-modal.jade' %}
       | {% include 'license-modal.jade' %}
       | {% verbatim %}
-      .ico-li.small.all(ng-show="!ui.detail")
-        .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
-          icon.ico-main(src="{{g.svg}}")
-      .ico-li.all(ng-show="ui.detail")
-        .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]")
-          .icons
+      //-
+        .ico-li.small.all(ng-show="!ui.detail")
+          .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
             icon.ico-main(src="{{g.svg}}")
-            //-
-              .ib
-                icon.ico1(src="{{g.svg}}")
-                icon.ico2(src="{{g.svg}}")
-                br
-                icon.ico3(src="{{g.svg}}")
-                icon.ico4(src="{{g.svg}}")
-          .infos
-            .text
-              .name {{g.name}}
-              .author
-                | by
-                a(href="{{g.author_url}}#") {{g.author}}
-                |  @ 
-                a(href="{{g.license_url}}#") {{g.license.name}}
-            .tags
-              .tag(ng-repeat="t in g.tags") {{t}}
-            .action
-              button.btn.btn-success.btn-sm.detail(ng-show="!g.added") Add
-              button.btn.btn-danger.btn-sm.detail(ng-show="g.added") Remove
-              button.btn.btn-primary.btn-sm.detail(ng-click="gh.edit.init($event,g);") Detail
-          | {% endverbatim %}
+        .ico-li.all(ng-show="ui.detail")
+          .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]")
+            .icons
+              icon.ico-main(src="{{g.svg}}")
+              //-
+                .ib
+                  icon.ico1(src="{{g.svg}}")
+                  icon.ico2(src="{{g.svg}}")
+                  br
+                  icon.ico3(src="{{g.svg}}")
+                  icon.ico4(src="{{g.svg}}")
+            .infos
+              .text
+                .name {{g.name}}
+                .author
+                  | by
+                  a(href="{{g.author_url}}#") {{g.author}}
+                  |  @ 
+                  a(href="{{g.license_url}}#") {{g.license.name}}
+              .tags
+                .tag(ng-repeat="t in g.tags") {{t}}
+              .action
+                button.btn.btn-success.btn-sm.detail(ng-show="!g.added") Add
+                button.btn.btn-danger.btn-sm.detail(ng-show="g.added") Remove
+                button.btn.btn-primary.btn-sm.detail(ng-click="gh.edit.init($event,g);") Detail
+            | {% endverbatim %}
+
       #footer
         | 愛 Aicon

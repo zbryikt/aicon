@@ -1,0 +1,49 @@
+iframe.pxy#login-form-pxy(name="login-form-pxy",height="0",width="0")
+#login-modal.ui.modal
+  .header
+    | Login
+  .content
+    form#login-form(enctype="multipart/form-data",method="post",target="login-form-pxy",action="/")
+      | {% csrf_token %}
+      .ui.two.column.middle.aligned.relaxed.grid.basic.segment
+        .column 
+          h3.ui.header.center.aligned with Social Account
+        .column 
+          h3.ui.header.center.aligned with AiCON account
+      br
+      .ui.two.column.middle.aligned.relaxed.grid.basic.segment
+        .column 
+          br
+          .ui.facebook.button.small
+            i.facebook.icon
+            | Facebook
+          .ui.google.plus.button.small
+            i.google.plus.icon
+            | Google Plus
+          .ui.twitter.button.small
+            i.twitter.icon
+            | Twitter
+        .ui.vertical.divider OR
+        .column
+          .ui.form.segment
+            .field
+              .label email
+              input(type="text",name="email",placeholder="Your Email as Account")
+            .field
+              .label password
+              input(type="password",name="password", placeholder="Your Password")
+            .field(style="text-align:center")
+              .ui.buttons
+                .ui.button.green Sign In
+                .or
+                .ui.button.blue Sign Up
+  .actions
+    .error-hint.error
+      i.glyphicon.glyphicon-remove
+      | Some error occurred. Please try again later.
+    .error-hint.missed
+      i.glyphicon.glyphicon-remove
+      | Some fields are invalid. Please fix them.
+    .ui.button(onclick="$('#login-modal').modal('hide');") Cancel
+
+

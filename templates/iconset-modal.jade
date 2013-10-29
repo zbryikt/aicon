@@ -1,0 +1,41 @@
+iframe.pxy#ics-edit-form-pxy(name="ics-edit-form-pxy",height="0",width="0")
+#ics-edit-modal.ui.modal
+  .header
+    | {% verbatim %}
+    | Edit Icon Set
+    | {% endverbatim %}
+  .content
+    form#ics-edit-form(enctype="multipart/form-data",method="post",target="ics-edit-form-pxy",action="/license/")
+      | {% csrf_token %}
+      .ui.form.segment
+        .two.fields
+          .field
+            label Icon Set Name
+            input(type="text",name="name",placeholder="License Name")
+          .field
+            label Privilege
+            select
+              option Private - Visible only you
+              option(selected) Protected - Visible with authkey
+              option Public - Visible to everyone
+        .field
+          label Description
+          textarea(type="text",name="desc",placeholder="Description",style="min-height:70px;height:70px")
+        .field
+          label You can share this iconset with other via this permalink: 
+          input(type="text",name="url",value="http://aicon.com/set/qersdhfp28y?authkey=qwertyu32sdfihoiquw0",style="margin-bottom:5px",disabled)
+          .ui.button.green Copy
+          .ui.button.blue Share on Facebook
+          .ui.button.red Share on Google Plus
+          .ui.button.teal Share on Twitter
+  .actions
+    .error-hint.error
+      i.glyphicon.glyphicon-remove
+      | Some error occurred. Please try again later.
+    .error-hint.missed
+      i.glyphicon.glyphicon-remove
+      | Some fields are invalid. Please fix them.
+    .ui.button(onclick="$('#ics-edit-modal').modal('hide');") Cancel
+    .ui.button.green Save
+
+
