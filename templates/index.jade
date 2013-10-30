@@ -98,7 +98,7 @@ html
         .ib
           .when-empty(ng-show="st.len==0") ( empty )
           .ico-li-it(ng-repeat="g in st.list")
-            icon(src="{{g.svg}}",del="st.add(g)")
+            icon(src="{{g.svg}}",del="st.add(g)",ng-click="hv.edit.handle($event,g)")
         .ui.divider
       .ui.ribbon.label.large.red aicon default
       .ui.label.pointing.left.small(style="margin-left: -25px")

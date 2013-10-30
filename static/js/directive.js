@@ -129,6 +129,15 @@ angular.module('utils', []).directive('tags', function($compile){
           return x$;
         });
       }
+      if (attrs.ngClick) {
+        element.on('click', function(e){
+          var x$;
+          x$ = scope.$parent;
+          x$.$event = e;
+          x$.$apply(attrs.ngClick);
+          return x$;
+        });
+      }
       return attrs.$observe('src', function(v){
         if (v) {
           return element.find('.object').replaceWith("<img class='object' src='/m/" + v + "'>");

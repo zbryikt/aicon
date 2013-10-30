@@ -58,6 +58,9 @@ angular.module \utils, <[]>
       if attrs.ngMouseout => element.on \mouseout (e) -> scope.$parent
         ..$event = e
         ..$apply attrs.ngMouseout
+      if attrs.ngClick => element.on \click (e) -> scope.$parent
+        ..$event = e
+        ..$apply attrs.ngClick
       attrs.$observe \src, (v) ->
         # if in <object>:
         # if v => element.find \.object .replaceWith "<object class='object' type='image/svg+xml' data='/m/#{v}'></object>"

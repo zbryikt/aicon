@@ -4,7 +4,7 @@
     | Icon: {{hv.item.name}}
     | {% endverbatim %}
   .content
-    form#glyph-new-form(enctype="multipart/form-data",method="post",target="glyph-new-form-pxy",action="/glyph/")
+    form#glyph-detail-form(enctype="multipart/form-data",method="post",target="glyph-detail-form-pxy",action="/glyph/")
       | {% csrf_token %}
       | {% verbatim %}
       .ui.grid

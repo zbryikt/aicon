@@ -574,6 +574,13 @@ main = function($scope, $http){
   $scope.st.init();
   $scope.qr.init();
   return $scope.hv = {
+    edit: {
+      item: {},
+      handle: function($event, g){
+        this.item = g;
+        return $('#glyph-edit-modal').modal('show');
+      }
+    },
     item: {},
     h: null,
     handle: function($event, g){

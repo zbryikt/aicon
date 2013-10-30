@@ -1,53 +1,63 @@
-#glyph-detail-modal.ui.modal
+#glyph-edit-modal.ui.modal
   .header
     | {% verbatim %}
-    | Icon: {{hv.item.name}}
+    | Customization / Icon: {{hv.edit.item.name}}
     | {% endverbatim %}
   .content
-    form#glyph-new-form(enctype="multipart/form-data",method="post",target="glyph-new-form-pxy",action="/glyph/")
+    form#glyph-edit-form(enctype="multipart/form-data",method="post",target="glyph-edit-form-pxy",action="/glyph/")
       | {% csrf_token %}
       | {% verbatim %}
       .ui.grid
         .six.wide.column
-          .icon-wrap
-            img.ratio(src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAQAICRAEAOw==")
-            icon.detail-modal(src="{{hv.item.svg}}")
-        .ten.wide.column
-          .ui.form.segment
-            .field
-              b(style="font-size:110%") "{{hv.item.name}}"
-              |  by 
-              a(href="{{hv.item.author_url}}") {{hv.item.author}}
-              | , released under the "
-              a(href="{{hv.item.license_url}}") {{hv.item.license.name}}
-              |  " license.
-            .four.fields.variant
-              .field
-                label normal
-                icon(src="{{hv.item.svg}}")
-              .field
-                label colored
-                icon.colored(src="{{hv.item.svg}}")
-              .field
-                label animated
-                icon.rotate(src="{{hv.item.svg}}")
-              .field
-                label blurred
-                icon.blurred(src="{{hv.item.svg}}")
+          .ui.form.segment.variant
             .two.fields
               .field
-                label Color
-                input(type="text",placeholder="Red")
+                label normal
+                icon.edit-modal(src="{{hv.edit.item.svg}}")
               .field
-                label Rotation
-                input(type="text",placeholder="45")
+                label colored
+                icon.edit-modal.colored(src="{{hv.edit.item.svg}}")
+            .two.fields
+              .field
+                label animated
+                icon.edit-modal.rotate(src="{{hv.edit.item.svg}}")
+              .field
+                label blurred
+                icon.edit-modal.blurred(src="{{hv.edit.item.svg}}")
+        .ten.wide.column
+          .ui.form.segment
+            h3 Customized Settings
+            .two.fields
+              .field
+                label Name
+                input(type="text",placeholder="used in css class")
+              .field
+                label Color
+                input(type="text",placeholder="used in colored style.")
+            .two.fields
+              .field
+                label Animation
+                select
+                  option Rotate
+                  option Flip
+                  option Bounce
+                  option Zoom
+                  option Blink
+              .field
+                label Background Color
+                input(type="text",placeholder="used in inverted style.")
+            .field(style="margin-bottom:0")
+              label Also Generate:
+              .ui.checkbox(style="padding:5px 5px 0")
+                input(type="checkbox")
+                label icon mask class
             .field
-              label Animation
-              input(type="text",placeholder="Rotate")
-            .field
-              label tags
-              span(ng-repeat="t in hv.item.tags") {{t}}
+              .ui.checkbox(style="padding:5px 5px 0")
+                input(type="checkbox")
+                label inverted icon class
 
       | {% endverbatim %}
   .actions
-    .ui.button.green(onclick="$('#glyph-detail-modal').modal('hide')") Close
+    .ui.button(onclick="$('#glyph-edit-modal').modal('hide')") Cancel
+    .ui.button.red(onclick="$('#glyph-edit-modal').modal('hide')") Reset
+    .ui.button.green(onclick="$('#glyph-edit-modal').modal('hide')") Save

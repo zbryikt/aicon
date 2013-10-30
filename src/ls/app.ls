@@ -236,6 +236,12 @@ main = ($scope, $http) ->
   $scope.qr.init!
 
   $scope.hv =
+    edit:
+      item: {}
+      handle: ($event, g) ->
+        @item = g
+        $ \#glyph-edit-modal .modal \show
+
     item: {}
     h: null
     handle: ($event, g) ->
