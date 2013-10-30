@@ -1,0 +1,45 @@
+| {% verbatim %}
+#glyph-edit-modal.modal.fade: .modal-dialog: .modal-content
+  .modal-header
+    button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+    h4.modal-title Detail: {{gh.edit.item.name.v}}
+  .modal-body: .row
+    .col-sm-5
+      .upload
+        icon(src="{{gh.edit.item.svg.v}}")
+    .col-sm-7
+      .form
+        .form-row(ng-class="{true:'',false:'invalid'}[gh.edit.item.name.p]")
+          .form-label
+            | Icon Name
+            i.required
+          .form-input: input(type="text",name="name", placeholder="Icon Name",ng-model="gh.edit.item.name.v")
+        .form-row(ng-class="{true:'',false:'invalid'}[gh.edit.item.author.p]")
+          .form-label
+            | Author Name
+            i.required
+          .form-input: input(type="text",name="author", placeholder="Author",ng-model="gh.edit.item.author.v")
+        .form-row
+          .form-label Author URL
+          .form-input: input(type="text",name="author_url", placeholder="URL to Author",ng-model="gh.edit.item.author_url.v")
+        .form-row(ng-class="{true:'',false:'invalid'}[gh.edit.item.license.p]")
+          .form-label
+            | License
+            i.required
+          .form-input
+            license(ng-model="gh.edit.item.license.v",name="license")
+            i.glyphicon.glyphicon-plus(ng-click="lc.init()")
+      small(style="display:block;margin:0 0 7px 0;background: #eee;padding:3px 13px") tags
+      .invalid-self(ng-class="{true:'',false:'invalid'}[gh.edit.item.tags.p]")
+        tags(ng-model="gh.edit.item.tags.v", name="tags")
+    | (
+    i.required
+    | : required )
+
+  .modal-footer
+    .error-hint.missed
+      i.glyphicon.glyphicon-remove
+      | Some fields are invalid. Please fix them.
+    button.btn.btn-primary(ng-click="gh.edit.save()") Save
+    button.btn.btn-default(data-dismiss="modal") Cancel
+| {% endverbatim %}

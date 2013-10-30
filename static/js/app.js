@@ -12,6 +12,10 @@ if (deepEq$(typeof String.prototype.trim, "undefined", '===')) {
 main = function($scope, $http){
   $scope = import$($scope, {
     buildFont: function(){
+      $scope.st.save();
+      console.log("building: " + $scope.st.cur.icons.map(function(it){
+        return it.pk;
+      }));
       return $http.post('/build/', $scope.st.cur.icons.map(function(it){
         return it.pk;
       })).success(function(d){
@@ -568,7 +572,53 @@ main = function($scope, $http){
   });
   $scope.lc.fetch();
   $scope.st.init();
-  return $scope.qr.init();
+  $scope.qr.init();
+  return $scope.hv = {
+    item: {},
+    h: null,
+    handle: function($event, g){
+      if (this.h) {
+        clearTimeout(this.h);
+        this.h = null;
+      }
+      if (!g) {
+        return this.h = setTimeout(function(){
+          return $('#icon-hint').fadeOut();
+        }, 1000);
+      } else {
+        this.item = g;
+        return setTimeout(function(){
+          var e, p, x$, n, left, ref$;
+          e = $($event.target);
+          while (!e.hasClass('svg-icon') && e.length) {
+            e = e.parent();
+          }
+          p = e.offset();
+          if (!p) {
+            return;
+          }
+          x$ = n = $('#icon-hint');
+          x$.fadeIn();
+          x$.css({
+            top: (2 + p.top + e.outerHeight()) + "px",
+            left: '0px'
+          });
+          n = $("#icon-hint .ib");
+          left = e.width() / 2 + p.left - n.outerWidth() / 2 - 50;
+          left >= 10 || (left = 10);
+          left <= (ref$ = $('body').outerWidth() - n.outerWidth() - 10) || (left = ref$);
+          n.css({
+            marginLeft: left + "px"
+          });
+          n = $("#icon-hint .arrow");
+          left = e.width() / 2 + p.left - n.outerWidth() / 2;
+          return n.css({
+            marginLeft: left + "px"
+          });
+        }, 0);
+      }
+    }
+  };
 };
 function deepEq$(x, y, type){
   var toString = {}.toString, hasOwnProperty = {}.hasOwnProperty,

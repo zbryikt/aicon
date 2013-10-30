@@ -49,18 +49,19 @@ angular.module \utils, <[]>
     template:
       "<div class='svg-icon {{class}}'><div class='object'></div><div class='mask'></div>" +
       "<div class='delete' ng-click='$event.stopPropagation();del({e: $event})'>" +
-      "<i class='glyphicon glyphicon-minus-sign'></i></div></div>"
+      "<i class='icon remove'></i></div></div>"
     link: (scope, element, attrs) ->
       if !attrs.del => element.find \.delete .remove!
-      # specific for aicon
-      /*element.on \mouseover, (e) ->
-        p = element.offset!
-        n = $ \#icon-hint
-          ..show!
-          ..css top: "#{p.top - n.outerHeight!}px", left: "#{element.width! / 2 + p.left - n.outerWidth! / 2}px"
-      */
+      if attrs.ngMouseover => element.on \mouseover (e) -> scope.$parent
+        ..$event = e
+        ..$apply attrs.ngMouseover
+      if attrs.ngMouseout => element.on \mouseout (e) -> scope.$parent
+        ..$event = e
+        ..$apply attrs.ngMouseout
       attrs.$observe \src, (v) ->
         # if in <object>:
         # if v => element.find \.object .replaceWith "<object class='object' type='image/svg+xml' data='/m/#{v}'></object>"
-        if v => element.find \.object .replaceWith "<iframe class='object' src='/m/#{v}'></iframe>"
+        # if in <iframe>:
+        # if v => element.find \.object .replaceWith "<iframe class='object' src='/m/#{v}'></iframe>"
+        if v => element.find \.object .replaceWith "<img class='object' src='/m/#{v}'>"
         else element.find \.object .replaceWith "<div class='object'>no data</div>"

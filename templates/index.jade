@@ -31,6 +31,8 @@ html
     #content
       .ib(style="padding-top: 20px")  
       | {% include 'glyph/new-modal.jade' %}
+      | {% include 'glyph/detail-modal.jade' %}
+      | {% include 'glyph/edit-modal.jade' %}
       | {% include 'license-modal.jade' %}
       | {% include 'iconset-modal.jade' %}
       | {% include 'login-modal.jade' %}
@@ -38,7 +40,7 @@ html
         input(type="text",placeholder="Search Icons...",ng-model="searchKeyword")
         i.search.icon
 
-      .ui.small.secondary.menu
+      .ui.small.secondary.menu#search-order
         a.active.item
           i.icon.trophy
           | default
@@ -66,26 +68,25 @@ html
                 | {{ s.name }}
                 small ( {{ s.icons.length }} )
               | {% endverbatim %}
-          a.item(ng-click="st.toggle()",style="width:87px;text-align:right")
-            span(ng-show="st.show")
-              | hide
-              i.icon.arrow.up
-            span(ng-show="!st.show")
-              | show
-              i.icon.arrow.down
 
-      #icon-hint.ui.pointing.below.label
-        | "arrow", by
-        a(href="#") tkirby
-        |  @ 
-        a(href="#") CC-BY3.0
-        | .
-        a(href="#") detail
-        i.icon.double.angle.right
-        | 
       | {% verbatim %}
+      #icon-hint(ng-mouseover="hv.handle($event,hv.item)", ng-mouseout="hv.handle($event,null)")
+        .arrow
+        .ib
+          | "{{hv.item.name}}", by
+          a(href="#") {{hv.item.author}}
+          |  @ 
+          a(href="#") {{hv.item.license.name}}
+          | .
+          a(onclick="$('#glyph-detail-modal').modal('show');") 
+            | detail
+            i.icon.double.angle.right
+          | 
       .ico-li.iconset
         .ui.divider
+        .toggler(ng-click="st.toggle()")
+          i.icon.arrow.up(ng-show="st.show")
+          i.icon.arrow.down(ng-show="!st.show")
         .ctrls(ng-show="st.show")
           span.name {{ st.name }}
           i.icon.edit.sign.has-popup(data-content="edit name",onclick="$('#ics-edit-modal').modal('show');")
@@ -109,111 +110,13 @@ html
             .item author
             .item time
             .item license
-
       br
      
-      .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
-        icon.ico-main(src="{{g.svg}}")
+      .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]")
+        icon.ico-main(src="{{g.svg}}",ng-mouseover="hv.handle($event,g)",ng-mouseout="hv.handle($event,null)")
       | {% endverbatim %}
 
-      br(style="clear:both")
-      br
-      //-
-        .ui.ribbon.label.red editor's choice
-        br
-        | {% verbatim %}
-        .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
-          icon.ico-main(src="{{g.svg}}")
-
-        | {% endverbatim %}
 
     #footer
       | 愛 Aicon
-    //-
-      #header
-        img#logo(src="/s/img/logo.png")
-        | {% verbatim %}
-        div(style="display: inline-block;")
-          .ico-li#iconset
-            .ico-li-it(ng-show="st.sets.len==0")
-              icon(src="default/login.svg")
-              .name login now to
-              br
-              .count save your iconset!
-            .ico-li-it.short(ng-show="st.sets.len!=0",ng-click="st.new()")
-              icon(src="default/new.svg")
-              .count
-              br
-              .count
-            .ico-li-it(ng-repeat="s in st.sets",ng-click="st.load(s)",ng-class="{true:'active',false:''}[st.cur.pk==s.pk]")
-              icon(src="{{s.cover}}",del="st.rmset(e,s)")
-              .name {{s.name}}
-              br
-              .count {{s.icons.length}} icons
-        | {% endverbatim %}
-    //-
-      #menu-bar
-        input#iconset-name(type="text",value="圖示集", placeholder="(圖示集的名稱)",ng-model="st.name")
-        span(style="font-weight:900;font-size: 18px")
-          i.glyphicon.glyphicon-edit(onclick="$('#iconset-name').focus();")
-          button.btn.btn-link(ng-click="buildFont()") 建立字型
-          button.btn.btn-link(ng-click="st.save()") 儲存快選單
-          button.btn.btn-link(ng-click="gh.new.init()") 上傳圖示
-          //-button.btn.btn-link(data-toggle="modal",href="#glyph-uploader") 上傳圖示
-        input.form-control(style="height: 30px;vertical-align:baseline;display:inline-block;width: 300px",type="text",ng-model="searchKeyword",placeholder="搜尋圖示...")
-        span#menu-func
-          i.glyphicon.glyphicon-th(ng-click="ui.detail=false",ng-class="{true:'',false:'sel'}[ui.detail]")
-          i.glyphicon.glyphicon-th-large(ng-click="ui.detail=true",ng-class="{true:'sel',false:''}[ui.detail]")
-        span.acc-panel.pull-right
-          | {% if user.is_authenticated %}
-          | {{ user.username }}
-          span 登出
-          | {% else %}
-          a(href="/accounts/facebook/login/?process=login") 用臉書帳號登入
-          | {% endif %}
 
-    //-
-      .ico-li.chosen
-        #choose-hint.ico-li-it(ng-show="!st.len")
-          icon(src="svg/default.svg")
-        | {% verbatim %}
-        .ico-li-it(ng-repeat="g in st.list")
-          icon(src="{{g.svg}}",del="st.add(g)")
-        | {% endverbatim %}
-      | {% include 'glyph/new-modal.jade' %}
-      | {% include 'glyph/edit-modal.jade' %}
-      | {% include 'license-modal.jade' %}
-      | {% verbatim %}
-      //-
-        .ico-li.small.all(ng-show="!ui.detail")
-          .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]",ng-mouseover="mouse.over($event,g)")
-            icon.ico-main(src="{{g.svg}}")
-        .ico-li.all(ng-show="ui.detail")
-          .ico-li-it(ng-repeat="g in gh.list",ng-click="st.add(g)",ng-class="{true:'added',false:''}[g.added]")
-            .icons
-              icon.ico-main(src="{{g.svg}}")
-              //-
-                .ib
-                  icon.ico1(src="{{g.svg}}")
-                  icon.ico2(src="{{g.svg}}")
-                  br
-                  icon.ico3(src="{{g.svg}}")
-                  icon.ico4(src="{{g.svg}}")
-            .infos
-              .text
-                .name {{g.name}}
-                .author
-                  | by
-                  a(href="{{g.author_url}}#") {{g.author}}
-                  |  @ 
-                  a(href="{{g.license_url}}#") {{g.license.name}}
-              .tags
-                .tag(ng-repeat="t in g.tags") {{t}}
-              .action
-                button.btn.btn-success.btn-sm.detail(ng-show="!g.added") Add
-                button.btn.btn-danger.btn-sm.detail(ng-show="g.added") Remove
-                button.btn.btn-primary.btn-sm.detail(ng-click="gh.edit.init($event,g);") Detail
-            | {% endverbatim %}
-
-      #footer
-        | 愛 Aicon

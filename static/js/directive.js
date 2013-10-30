@@ -106,20 +106,32 @@ angular.module('utils', []).directive('tags', function($compile){
       "del": "&",
       "class": "@"
     },
-    template: "<div class='svg-icon {{class}}'><div class='object'></div><div class='mask'></div>" + "<div class='delete' ng-click='$event.stopPropagation();del({e: $event})'>" + "<i class='glyphicon glyphicon-minus-sign'></i></div></div>",
+    template: "<div class='svg-icon {{class}}'><div class='object'></div><div class='mask'></div>" + "<div class='delete' ng-click='$event.stopPropagation();del({e: $event})'>" + "<i class='icon remove'></i></div></div>",
     link: function(scope, element, attrs){
       if (!attrs.del) {
         element.find('.delete').remove();
       }
-      /*element.on \mouseover, (e) ->
-        p = element.offset!
-        n = $ \#icon-hint
-          ..show!
-          ..css top: "#{p.top - n.outerHeight!}px", left: "#{element.width! / 2 + p.left - n.outerWidth! / 2}px"
-      */
+      if (attrs.ngMouseover) {
+        element.on('mouseover', function(e){
+          var x$;
+          x$ = scope.$parent;
+          x$.$event = e;
+          x$.$apply(attrs.ngMouseover);
+          return x$;
+        });
+      }
+      if (attrs.ngMouseout) {
+        element.on('mouseout', function(e){
+          var x$;
+          x$ = scope.$parent;
+          x$.$event = e;
+          x$.$apply(attrs.ngMouseout);
+          return x$;
+        });
+      }
       return attrs.$observe('src', function(v){
         if (v) {
-          return element.find('.object').replaceWith("<iframe class='object' src='/m/" + v + "'></iframe>");
+          return element.find('.object').replaceWith("<img class='object' src='/m/" + v + "'>");
         } else {
           return element.find('.object').replaceWith("<div class='object'>no data</div>");
         }

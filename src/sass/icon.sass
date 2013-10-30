@@ -1,3 +1,5 @@
+@import base
+
 // default size.
 
 .svg-icon
@@ -8,7 +10,7 @@
 
 .svg-icon
   position: relative
-  & > object, & > iframe
+  & > object, & > iframe, & > img
     width: 80%
     height: 80%
     margin: 10%
@@ -20,3 +22,37 @@
     width: 100%
     height: 100%
     background: rgba(0,0,0,0.001)
+
+.ico-li-it
+  @include act-icon
+  &:hover
+    //background: rgba(210,255,230,0.7)
+    .delete
+      display: block // set to block if enable this feature
+    .icons > .ib
+      opacity: 1.0
+  .delete
+    display: none
+    @include act-icon
+    position: absolute
+    top: -6px
+    right: -6px
+    color: #fff
+    background: #f02
+    border-radius: 15px
+    height: 14px
+    width: 14px
+    font-size: 12px
+    line-height: 13px
+
+    i.icon
+      opacity: 1
+    
+    &:before
+      content: " "
+      position: absolute
+      top: 5px
+      left: 3px
+      //background: #fff
+      width: 8px
+      height: 8px

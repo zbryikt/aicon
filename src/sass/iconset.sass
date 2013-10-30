@@ -18,7 +18,7 @@
     font-size: 12px
     vertical-align: top
   .ui.divider:first-of-type
-    margin-bottom: 2px
+    margin: 2px
   .ui.divider:last-of-type
     margin-top: 2px
   .ellipsis
@@ -32,9 +32,13 @@
       line-height: 32px
       margin: 10px 0 0
 
-  .ctrls
+  .toggler
+    @include act-icon
     position: absolute
     right: 0
+  .ctrls
+    position: absolute
+    right: 20px
     .name
       font-size: 12px
       margin-right: 7px

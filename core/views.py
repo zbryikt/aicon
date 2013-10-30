@@ -9,10 +9,44 @@ from utils import utils
 from django.core import serializers
 from taggit.models import Tag
 from django.forms.formsets import formset_factory
-import fontforge, os, random, glob, zipfile, StringIO, os.path, json
+import fontforge, os, random, glob, zipfile, StringIO, os.path, json, re
 
 KERNING = 0
 tmp_root = "/tmp/aicon"
+
+def make_preview(fcss, fhtml, cm):
+  names = {}
+  fhtml.writelines(
+"""<!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="font.css"><style type="text/css">
+body{background:#eee;font-family:arial}
+.ib{text-align:center;display:inline-block;padding:10px 10px 5px;margin:5px;width:160px;border:1px solid #444;
+border-radius:3px;background:#fff;box-shadow:1px 1px 3px rgba(0,0,0,0.1)}
+.ib>div{display:inline-block;padding:5px;font-size:16px;border-bottom:1px solid #999;width:90%}
+.ib>div:last-of-type{font-size:64px;border-bottom:none;text-shadow:1px 1px 3px rgba(0,0,0,0.2)
+}</style></head><body><h3>myfont preview</h3>""")
+  fcss.writelines("""
+@font-face{font-family:myfont;src:url('font.ttf')}
+i.icon{font-style:normal;font-family:myfont;vertical-align:baseline}
+i.icon:after{display:inline}
+  """)
+  fhtml.writelines("<div class='ib' style='background:#bbb;color:#fff'><div>class name</div><div>16px preview</div><div>64px</div></div>")
+  for item in cm:
+    key = item + 0xf000
+    name = re.sub(r"[^a-zA-Z0-9-]", "-", cm[item].name)
+    names.setdefault(name, 0)
+    names[name]+=1
+    c = names[name]
+    name = name + (("_%d"%c) if c>1 else "")
+    fcss.writelines('i.icon.%s:after { content: "\\%4x" }\n'%(name, key))
+    fhtml.writelines(
+      "<div class='ib'><div>%s</div>"%(name) + 
+      "<div>align <i class='icon %s'></i> preview</div>"%(name) + 
+      "<div><i class='icon %s'></i></div></div>"%(name)
+    )
+  fhtml.writelines("</body></html>")
+  fhtml.close()
+  fcss.close()
+
 class BuildFontView(View):
   def get(self, request, *args, **kwargs):
     name = kwargs.get("name") or ""
@@ -33,6 +67,7 @@ class BuildFontView(View):
     if len(pk_list)<=0: return redirect("/")
     pk = [int(x) for x in pk_list]
     att = []
+    codemap = {}
     f = fontforge.font()
     gs = Glyph.objects.all()
     gs = Glyph.objects.filter(pk__in=pk_list)
@@ -48,6 +83,7 @@ class BuildFontView(View):
       c.right_side_bearing = KERNING
       c.simplify()
       c.round()
+      codemap[count] = g
       count += 1
     random_name = ""
     while True:
@@ -59,6 +95,8 @@ class BuildFontView(View):
     eof_fn = os.path.join(dir, "font.eof")
     woff_fn = os.path.join(dir, "font.woff")
     license_fn = os.path.join(dir, "attribution.txt")
+    css_fn = os.path.join(dir, "font.css")
+    html_fn = os.path.join(dir, "font.html")
     f.generate(ttf_fn)
     f.generate(eof_fn)
     f.generate(woff_fn)
@@ -66,6 +104,9 @@ class BuildFontView(View):
     for g in att:
       f.writelines("the icon '%s' is contributed by %s %s\n"%(g.name, g.author, "("+g.author_url+")" if g.author_url else ""))
     f.close()
+    fcss = open(css_fn, "w")
+    fhtml = open(html_fn, "w")
+    make_preview(fcss, fhtml, codemap)
     files = glob.glob(os.path.join(dir, "*"))
     #buf = StringIO.StringIO()
     zip_fn = os.path.join(tmp_root, random_name+".zip")

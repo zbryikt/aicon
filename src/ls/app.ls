@@ -10,6 +10,8 @@ if typeof String.prototype.trim === "undefined"
 main = ($scope, $http) ->
   $scope = $scope <<< do
     build-font: ->
+      $scope.st.save!
+      console.log "building: #{($scope.st.cur.icons.map (-> it.pk))}"
       $http.post \/build/, ($scope.st.cur.icons.map (-> it.pk))
       .success (d) ->
         if d and d.name =>
@@ -117,9 +119,7 @@ main = ($scope, $http) ->
           @trim!
           if <[name desc]>map(~> @item[it]p = !!@item[it]v)filter(->!it)length =>
             return $ '#lic-new-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
-          $ \#lic-new-form-pxy .load ->
-            #$ \#lic-new-modal .modal \hide
-            $ \#lic-new-modal .hide!
+          $ \#lic-new-form-pxy .load -> $ \#lic-new-modal .hide!
           $ \#lic-new-form .submit!
 
     gh:
@@ -234,3 +234,32 @@ main = ($scope, $http) ->
   $scope.lc.fetch!
   $scope.st.init!
   $scope.qr.init!
+
+  $scope.hv =
+    item: {}
+    h: null
+    handle: ($event, g) ->
+      if @h =>
+        clearTimeout @h
+        @h = null
+      if !g =>
+        @h = setTimeout (-> $ \#icon-hint .fadeOut!), 1000
+      else
+        @item = g
+        setTimeout -> # calculate after angular render 
+          e = $ $event.target
+          while !e.hasClass(\svg-icon) and e.length => e = e.parent!
+          p = e.offset!
+          if not p => return
+          n = $ \#icon-hint
+            ..fadeIn!
+            ..css top: "#{2 + p.top + e.outerHeight!}px", left: \0px
+          n = $ "\#icon-hint .ib"
+          left = e.width! / 2 + p.left - n.outerWidth! / 2 - 50
+          left>?=10
+          left<?=( $ \body .outerWidth! - n.outerWidth! - 10 )
+          n.css marginLeft: "#{left}px"
+          n = $ "\#icon-hint .arrow"
+          left = e.width! / 2 + p.left - n.outerWidth! / 2
+          n.css marginLeft: "#{left}px"
+        ,0
