@@ -139,8 +139,17 @@ angular.module('utils', []).directive('tags', function($compile){
         });
       }
       return attrs.$observe('src', function(v){
+        var node;
         if (v) {
-          return element.find('.object').replaceWith("<img class='object' src='/m/" + v + "'>");
+          if (attrs.color) {
+            node = $("<iframe class='object' src='/m/" + v + "'></iframe>");
+            element.find('.object').replaceWith(node);
+            return node.load(function(){
+              return $(node[0].contentDocument).find("*").css('fill', attrs.color);
+            });
+          } else {
+            return element.find('.object').replaceWith("<img class='object' src='/m/" + v + "'>");
+          }
         } else {
           return element.find('.object').replaceWith("<div class='object'>no data</div>");
         }

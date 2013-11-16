@@ -66,5 +66,10 @@ angular.module \utils, <[]>
         # if v => element.find \.object .replaceWith "<object class='object' type='image/svg+xml' data='/m/#{v}'></object>"
         # if in <iframe>:
         # if v => element.find \.object .replaceWith "<iframe class='object' src='/m/#{v}'></iframe>"
-        if v => element.find \.object .replaceWith "<img class='object' src='/m/#{v}'>"
+        if v =>
+          if attrs.color =>
+            node = $ "<iframe class='object' src='/m/#{v}'></iframe>"
+            element.find \.object .replaceWith node
+            node .load -> $(node.0.contentDocument)find("*").css(\fill, attrs.color)
+          else => element.find \.object .replaceWith "<img class='object' src='/m/#{v}'>"
         else element.find \.object .replaceWith "<div class='object'>no data</div>"

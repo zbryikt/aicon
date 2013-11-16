@@ -27,23 +27,27 @@
                 icon(src="{{hv.item.svg}}")
               .field
                 label colored
-                icon.colored(src="{{hv.item.svg}}")
+                icon.colored(src="{{hv.item.svg}}",color="#090")
               .field
                 label animated
                 icon.rotate(src="{{hv.item.svg}}")
               .field
                 label blurred
-                icon.blurred(src="{{hv.item.svg}}")
-            .two.fields
+                //-icon.blurred(src="{{hv.item.svg}}")
+                icon.inverted(src="{{hv.item.svg}}",color="#fff")
+            .three.fields
               .field
                 label Color
                 input(type="text",placeholder="Red")
               .field
                 label Rotation
                 input(type="text",placeholder="45")
+              .field
+                label Animation
+                input(type="text",placeholder="Rotate")
             .field
-              label Animation
-              input(type="text",placeholder="Rotate")
+              label ligature
+              input(type="text",placeholder="Words for ligature, e.g., 'login'")
             .field
               label tags
               span(ng-repeat="t in hv.item.tags") {{t}}

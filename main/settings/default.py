@@ -242,6 +242,9 @@ PIPELINE_CSS = {
   },
 }
 
+order_main_js = []
+main_js = (glob.glob('static/js/*.js'))
+
 order_js = ['static/v/js/jquery-1.10.2.min.js']
 vendor_js = (glob.glob('static/v/js/*.js'))
 
@@ -249,9 +252,9 @@ filter(lambda x: not x in order_js, vendor_js)
 
 PIPELINE_JS = {
   'main': {
-    'source_filenames': (
-      'js/*.js',
-    ),
+    'source_filenames':
+      map(lambda x:re.sub(r"^static/", "", x), order_main_js + filter(lambda x: not x in order_main_js, main_js)),
+      #('js/*.js'),
     'output_filename': 'js/main.js'
   },
   'vendor': {
