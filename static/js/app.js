@@ -366,6 +366,13 @@ main = function($scope, $http){
       modal: {
         title: "Upload Icon"
       },
+      animationType: {
+        'Rotate': 'rt',
+        'Flip': 'fl',
+        'Bounce': 'bc',
+        'Zoom': 'zm',
+        'None': 'no'
+      },
       'new': {
         h: {
           init: function(){
@@ -411,6 +418,7 @@ main = function($scope, $http){
               }) {
                 d[k].p = !d[k].v ? false : true;
               }
+              d.rotation.p = /[^0-9.]/.exec(d.rotation.v) ? false : true;
             }
             $scope.gh['new'].h.set(this.callback);
             return $('#glyph-new-form').submit();
@@ -434,22 +442,24 @@ main = function($scope, $http){
         item: {
           data: {},
           save: function(){
-            var k;
+            var k, ref$, x;
             $scope.gh.trim(this.data);
+            for (k in {
+              name: (ref$ = this.data).name,
+              author: ref$.author,
+              license: ref$.license,
+              tags: ref$.tags
+            }) {
+              this.data[k].p = !this.data[k].v ? false : true;
+            }
+            this.data.rotation.p = /[^0-9.]/.exec(this.data.rotation.v) ? false : true;
             if ((function(){
-              var ref$, results$ = [];
-              for (k in {
-                name: (ref$ = this.data).name,
-                author: ref$.author,
-                license: ref$.license,
-                tags: ref$.tags
-              }) {
-                results$.push(!(this.data[k].p = !this.data[k].v ? false : true));
+              var results$ = [];
+              for (x in this.data) {
+                results$.push('p' in x && !x.p);
               }
               return results$;
-            }.call(this)).filter(function(it){
-              return it;
-            }).length > 0) {
+            }.call(this)).length > 0) {
               if (!$('#glyph-new-svg').val()) {
                 this.data.svg.p = false;
               }
@@ -503,6 +513,22 @@ main = function($scope, $http){
             v: ""
           },
           author_url: {
+            p: true,
+            v: ""
+          },
+          color: {
+            p: true,
+            v: ""
+          },
+          rotation: {
+            p: true,
+            v: ""
+          },
+          animation: {
+            p: true,
+            v: "no"
+          },
+          ligature: {
             p: true,
             v: ""
           },

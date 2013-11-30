@@ -160,6 +160,11 @@ class GlyphView(utils.RestView):
         glyph.author = form.cleaned_data["author"]
         glyph.author_url = form.cleaned_data["author_url"]
         glyph.license = form.cleaned_data["license"]
+        glyph.color = form.cleaned_data["color"]
+        glyph.rotation = form.cleaned_data["rotation"]
+        glyph.animation = form.cleaned_data["animation"]
+        glyph.ligature = form.cleaned_data["ligature"]
+
         for tag in form.cleaned_data["tags"]:
           glyph.tags.add(tag)
         glyph.save()

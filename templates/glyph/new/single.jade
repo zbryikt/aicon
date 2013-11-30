@@ -13,16 +13,32 @@
         .field(ng-class="{true:'',false:'error'}[gh.new.n.name.p]")
           label Icon Name
           input(type="text",placeholder="icon name",name="name",ng-model="gh.new.n.name.v")
+        .field(ng-class="{true:'',false:'error'}[gh.new.n.license.p]")
+          label License
+          license(ng-model="gh.new.n.license.v",name="license",style="width:85%;")
+          i.icon.plus.add-lic(ng-click="lc.init()")
+
+      .two.fields
         .field(ng-class="{true:'',false:'error'}[gh.new.n.author.p]")
           label Author Name
           input(type="text",placeholder="author name",name="author",ng-model="gh.new.n.author.v")
-      .field(ng-class="{true:'',false:'error'}[gh.new.n.author_url.p]")
-        label Author URL
-        input(type="text",placeholder="url of the author",name="author_url",ng-model="gh.new.n.author_url.v")
-      .field(ng-class="{true:'',false:'error'}[gh.new.n.license.p]")
-        label License
-        license(ng-model="gh.new.n.license.v",name="license",style="width:90%;")
-        i.icon.plus.add-lic(ng-click="lc.init()")
+        .field(ng-class="{true:'',false:'error'}[gh.new.n.author_url.p]")
+          label Author URL
+          input(type="text",placeholder="url of the author",name="author_url",ng-model="gh.new.n.author_url.v")
+      .four.fields.variant
+        .field
+          label color
+          input(type="text",placeholder="e.g., Red",ng-model="gh.new.n.color.v")
+        .field(ng-class="{true:'',false:'error'}[gh.new.n.rotation.p]")
+          label rotation
+          input(type="text",placeholder="e.g., 90",ng-model="gh.new.n.rotation.v")
+        .field
+          label animation
+          select(ng-model="gh.new.n.animation.v",ng-options="v as k for (k,v) in gh.animationType ")
+        .field
+          label ligature
+          input(type="text",placeholder="e.g., arrow",ng-model="gh.new.n.ligature.v")
+
       .field(ng-class="{true:'',false:'error'}[gh.new.n.tags.p]")
         label Tags
         tags(ng-model="gh.new.n.tags.v", name="tags")

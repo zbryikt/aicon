@@ -31,18 +31,31 @@ class License(models.Model):
     return utils.enjson(ret)
 
 class Glyph(models.Model):
+  ANIMATION_CHOICE = (
+    ('no', 'static'),
+    ('rt', 'rotate'),
+    ('fl', 'flip'),
+    ('bc', 'bounce'),
+    ('zm', 'zoom'),
+  )
   svg = models.FileField(upload_to="svg")
   name = models.CharField(max_length = 64)
   author = models.CharField(max_length = 128)
   author_url = models.CharField(max_length = 512, blank=True)
   license = models.ForeignKey(License)
   license_url = models.CharField(max_length = 512, blank=True)
+  color = models.CharField(max_length = 32, blank=True)
+  rotation = models.IntegerField(default=0)
+  animation = models.CharField(max_length = 2, choices = ANIMATION_CHOICE, default='no')
+  ligature = models.CharField(max_length = 20, blank=True)
   uploader = models.ForeignKey(auth.models.User)
   create_date = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now)
   tags = TaggableManager()
 
   # TODO let's take time to wrap it as an API
-  wrap_fields = ["svg", "name", "author", "author_url", "license", "license_url", "create_date", "uploader","pk"]
+  wrap_fields = [
+    "svg", "name", "author", "author_url", "license", "license_url", 
+    "color", "rotation", "animation","ligature" "create_date", "uploader","pk"]
   @classmethod
   def Wrapper(self, datatype, qs):
     ret = []

@@ -32,22 +32,22 @@
                 label animated
                 icon.rotate(src="{{hv.item.svg}}")
               .field
-                label blurred
-                //-icon.blurred(src="{{hv.item.svg}}")
+                label inverted
                 icon.inverted(src="{{hv.item.svg}}",color="#fff")
+
             .three.fields
               .field
                 label Color
-                input(type="text",placeholder="Red")
+                input(type="text",placeholder="Red",ng-model="hv.item.color")
               .field
                 label Rotation
-                input(type="text",placeholder="45")
+                input(type="text",placeholder="45", ng-model="hv.item.rotation")
               .field
                 label Animation
-                input(type="text",placeholder="Rotate")
+                input(type="text",placeholder="Rotate",ng-model="hv.item.animation")
             .field
               label ligature
-              input(type="text",placeholder="Words for ligature, e.g., 'login'")
+              input(type="text",placeholder="Words for ligature, e.g., 'login'",ng-model="hv.item.ligature")
             .field
               label tags
               span(ng-repeat="t in hv.item.tags") {{t}}

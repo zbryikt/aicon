@@ -91,7 +91,7 @@ html
         .ctrls(ng-show="st.show")
           .edit-set(onclick="$('#ics-edit-modal').modal('show');")
             span.name() {{ st.name }}
-            i.icon.edit.sign.has-popup(data-content="edit name")
+            i.icon.edit.sign.has-popup(data-content="edit set")
           i.icon.trash.has-popup(ng-click="st.rmset(e, st.cur)",data-content="remove set")
         .ellipsis(ng-click="st.toggle()")
           i.icon.ellipsis.horizontal

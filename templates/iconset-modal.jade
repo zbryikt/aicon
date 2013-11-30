@@ -12,14 +12,13 @@ iframe.pxy#ics-edit-form-pxy(name="ics-edit-form-pxy",height="0",width="0")
             input(type="text",name="name",placeholder="Icon Set Name",ng-model="st.name")
           .field
             label Privilege
-            select(ng-model="st.perm",ng-options="v as k for (k,v) in st.permType ")
+            select(ng-model="st.perm",ng-options="v as k for (k,v) in st.permType")
         .field
           label Description
           textarea(type="text",name="desc",placeholder="Description",style="min-height:70px;height:70px",ng-model="st.desc")
         .field
           label You can share this iconset with other via this permalink: 
           input(type="text",name="url",value="http://aicon.com/set/qersdhfp28y?authkey=qwertyu32sdfihoiquw0",style="margin-bottom:5px",disabled)
-          .ui.button.green Copy
           .ui.button.blue Share on Facebook
           .ui.button.red Share on Google Plus
           .ui.button.teal Share on Twitter
