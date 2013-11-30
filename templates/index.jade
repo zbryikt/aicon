@@ -64,9 +64,10 @@ html
                 | create new set
               | {% verbatim %}
               a.item(ng-repeat="s in st.sets",ng-click="st.load(s)",ng-class="{true:'active',false:''}[st.cur.pk==s.pk]")
-                icon(src="{{s.cover}}",del="st.rmset(e,s)")
+                icon(src="{{s.cover}}") //-,del="st.rmset(e,s)")
                 | {{ s.name }}
                 small ( {{ s.icons.length }} )
+                i.icon.remove(ng-click="st.rmset(e,s)")
               | {% endverbatim %}
 
       | {% verbatim %}
