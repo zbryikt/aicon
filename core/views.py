@@ -242,7 +242,6 @@ class License2View(TemplateView):
     context = {"licenses": g, "form": form}
     return render(request, 'license-list.jade', context)
 
-
 class IconsetView(utils.RestView):
   des_model = Iconset
   query_attr = ["id", "name", "user__username"]
@@ -265,7 +264,7 @@ class IconsetView(utils.RestView):
     except: iconset = Iconset.objects.filter(user=request.user)
     ret = []
     for s in iconset:
-      obj = {"name": s.name, "pk": s.pk, "icons": [], "cover": "svg/default.svg"}
+      obj = {"name": s.name, "desc": s.desc, "perm": s.perm, "permkey": s.permkey, "pk": s.pk, "icons": [], "cover": "svg/default.svg"}
       glyphs = [x.glyph for x in Choice.objects.filter(iconset__pk=s.pk)]
       obj["icons"] = glyphs # Glyph.Wrapper('json', glyphs)
       #obj["icons"] = [{"pk": x.glyph.pk, "name": x.glyph.name, "svg": str(x.svg)} for x in glyphs]
@@ -289,6 +288,9 @@ class IconsetView(utils.RestView):
     try: iconset = Iconset.objects.get(pk=(data.get("pk") or -1))
     except: iconset = Iconset.objects.create(user=request.user)
     if data.get("name"): iconset.name = data["name"]
+    if data.get("desc"): iconset.desc = data["desc"]
+    if data.get("perm"): iconset.perm = int(data["perm"])
+    if data.get("permkey"): iconset.permkey = data["permkey"]
     iconset.save()
     data["pk"] = iconset.pk
     for gpk in data["icons"]:

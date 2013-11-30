@@ -55,9 +55,18 @@ class Glyph(models.Model):
       ret += [obj]
     return utils.enjson(ret)
 
+
 class Iconset(models.Model):
+  PERM_CHOICE = (
+    (0, 'public'),
+    (1, 'protected'),
+    (2, 'private'),
+  )
   user = models.ForeignKey(auth.models.User)
   name = models.CharField(max_length = 64, default="圖示集")
+  desc = models.CharField(max_length = 300, default="")
+  perm = models.IntegerField(max_length = 1, choices = PERM_CHOICE, default=0)
+  permkey = models.CharField(max_length = 32, default="")
   create_date = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now)
 
 class Choice(models.Model):

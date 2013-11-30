@@ -27,6 +27,9 @@ main = ($scope, $http) ->
         @chk!
       len: 0
       name: "圖示集"
+      desc: ""
+      perm: 0
+      perm-type: 'Public - Visible to everyone': 0, 'Protected - Visible with authkey': 1, 'Private - Visible only by you': 2
       list: {}
       show: false
       cur: icons: [] name: "圖示集" pk: -1
@@ -56,12 +59,13 @@ main = ($scope, $http) ->
       rand-name: -> <[圖示集 我的集合 尚未命名 還沒取名 新集合 超棒列表]>[parseInt Math.random!* *]
       new-count: 0
       new: ->
-        @sets.push @load cover: "default/unknown.svg", icons: [], name: @rand-name!, pk: --@new-count
+        @sets.push @load cover: "default/unknown.svg", icons: [], name: @rand-name!, desc: "", perm: "0", permkey: "", pk: --@new-count
       load: (s) ->
         @save!
         @clean!
         @cur = s
-        @name = s.name
+        @ <<< s{name,desc,perm,permkey}
+        console.log ">>>",@perm
         s.icons.map ~> @add $scope.gh.item it.pk, it
         s
       save-timer: null
@@ -71,15 +75,21 @@ main = ($scope, $http) ->
           @save-timer = null
           @save!
         , 5000
+      save-by-modal: ->
+        @save!
+        $ \#ics-edit-modal .modal \hide
       save: ->
         if @save-timer =>
           clearTimeout @save-timer
           @save-timer = null
         if !@len => return
-        @cur{name,icons} = {name: @name, icons: []}
+        @cur <<< @{name,desc,perm,permkey} <<< {icons: []}
+        #@cur{name,icons} = {name: @name, desc: @desc, icons: []}
         [k for k of @list]map ~> @cur.icons.push @list[it]
         des = @cur
-        $http.post \/iconset/, {pk: @cur.pk, name: @name, icons: [k for k of @list]map(~>@list[it]pk)}
+        payload = {pk: @cur.pk, icons: [k for k of @list]map(~>@list[it]pk)} <<< @{name,desc,perm,permkey}
+        console.log payload
+        $http.post \/iconset/, payload #{pk: @cur.pk, name: @name, desc: @desc, perm: @perm, icons: [k for k of @list]map(~>@list[it]pk)}
         .success (d) ~>
           if des.pk == -1 => des.pk = d.pk
 

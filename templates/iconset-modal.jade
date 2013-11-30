@@ -1,9 +1,7 @@
 iframe.pxy#ics-edit-form-pxy(name="ics-edit-form-pxy",height="0",width="0")
 #ics-edit-modal.ui.modal
   .header
-    | {% verbatim %}
     | Edit Icon Set
-    | {% endverbatim %}
   .content
     form#ics-edit-form(enctype="multipart/form-data",method="post",target="ics-edit-form-pxy",action="/license/")
       | {% csrf_token %}
@@ -11,16 +9,13 @@ iframe.pxy#ics-edit-form-pxy(name="ics-edit-form-pxy",height="0",width="0")
         .two.fields
           .field
             label Icon Set Name
-            input(type="text",name="name",placeholder="License Name")
+            input(type="text",name="name",placeholder="Icon Set Name",ng-model="st.name")
           .field
             label Privilege
-            select
-              option Private - Visible only you
-              option(selected) Protected - Visible with authkey
-              option Public - Visible to everyone
+            select(ng-model="st.perm",ng-options="v as k for (k,v) in st.permType ")
         .field
           label Description
-          textarea(type="text",name="desc",placeholder="Description",style="min-height:70px;height:70px")
+          textarea(type="text",name="desc",placeholder="Description",style="min-height:70px;height:70px",ng-model="st.desc")
         .field
           label You can share this iconset with other via this permalink: 
           input(type="text",name="url",value="http://aicon.com/set/qersdhfp28y?authkey=qwertyu32sdfihoiquw0",style="margin-bottom:5px",disabled)
@@ -36,6 +31,6 @@ iframe.pxy#ics-edit-form-pxy(name="ics-edit-form-pxy",height="0",width="0")
       i.glyphicon.glyphicon-remove
       | Some fields are invalid. Please fix them.
     .ui.button(onclick="$('#ics-edit-modal').modal('hide');") Cancel
-    .ui.button.green Save
+    .ui.button.green(ng-click="st.saveByModal();") Save
 
 

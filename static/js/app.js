@@ -41,6 +41,13 @@ main = function($scope, $http){
       },
       len: 0,
       name: "圖示集",
+      desc: "",
+      perm: 0,
+      permType: {
+        'Public - Visible to everyone': 0,
+        'Protected - Visible with authkey': 1,
+        'Private - Visible only by you': 2
+      },
       list: {},
       show: false,
       cur: {
@@ -113,6 +120,9 @@ main = function($scope, $http){
           cover: "default/unknown.svg",
           icons: [],
           name: this.randName(),
+          desc: "",
+          perm: "0",
+          permkey: "",
           pk: --this.newCount
         }));
       },
@@ -122,6 +132,10 @@ main = function($scope, $http){
         this.clean();
         this.cur = s;
         this.name = s.name;
+        this.desc = s.desc;
+        this.perm = s.perm;
+        this.permkey = s.permkey;
+        console.log(">>>", this.perm);
         s.icons.map(function(it){
           return this$.add($scope.gh.item(it.pk, it));
         });
@@ -138,8 +152,12 @@ main = function($scope, $http){
           return this$.save();
         }, 5000);
       },
+      saveByModal: function(){
+        this.save();
+        return $('#ics-edit-modal').modal('hide');
+      },
       save: function(){
-        var ref$, ref1$, k, des, this$ = this;
+        var ref$, k, des, payload, this$ = this;
         if (this.saveTimer) {
           clearTimeout(this.saveTimer);
           this.saveTimer = null;
@@ -147,10 +165,7 @@ main = function($scope, $http){
         if (!this.len) {
           return;
         }
-        ref1$ = {
-          name: this.name,
-          icons: []
-        }, (ref$ = this.cur).name = ref1$.name, ref$.icons = ref1$.icons;
+        (ref$ = this.cur, ref$.name = this.name, ref$.desc = this.desc, ref$.perm = this.perm, ref$.permkey = this.permkey, ref$).icons = [];
         (function(){
           var results$ = [];
           for (k in this.list) {
@@ -161,9 +176,8 @@ main = function($scope, $http){
           return this$.cur.icons.push(this$.list[it]);
         });
         des = this.cur;
-        return $http.post('/iconset/', {
+        payload = (ref$ = {
           pk: this.cur.pk,
-          name: this.name,
           icons: (function(){
             var results$ = [];
             for (k in this.list) {
@@ -173,7 +187,9 @@ main = function($scope, $http){
           }.call(this)).map(function(it){
             return this$.list[it].pk;
           })
-        }).success(function(d){
+        }, ref$.name = this.name, ref$.desc = this.desc, ref$.perm = this.perm, ref$.permkey = this.permkey, ref$);
+        console.log(payload);
+        return $http.post('/iconset/', payload).success(function(d){
           if (des.pk === -1) {
             return des.pk = d.pk;
           }
