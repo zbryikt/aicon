@@ -89,8 +89,9 @@ html
           i.icon.arrow.up(ng-show="st.show")
           i.icon.arrow.down(ng-show="!st.show")
         .ctrls(ng-show="st.show")
-          span.name {{ st.name }}
-          i.icon.edit.sign.has-popup(data-content="edit name",onclick="$('#ics-edit-modal').modal('show');")
+          .edit-set(onclick="$('#ics-edit-modal').modal('show');")
+            span.name() {{ st.name }}
+            i.icon.edit.sign.has-popup(data-content="edit name")
           i.icon.trash.has-popup(ng-click="st.rmset(e, st.cur)",data-content="remove set")
         .ellipsis(ng-click="st.toggle()")
           i.icon.ellipsis.horizontal
