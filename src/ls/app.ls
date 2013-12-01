@@ -9,6 +9,7 @@ if typeof String.prototype.trim === "undefined"
 
 main = ($scope, $http) ->
   $scope = $scope <<< do
+    xxx: "abc"
     build-font: ->
       $scope.st.save!
       console.log "building: #{($scope.st.cur.icons.map (-> it.pk))}"
@@ -140,7 +141,7 @@ main = ($scope, $http) ->
         <[name desc author author_url]>map ~> if (it of o) and o[it]v => o[it]v = o[it]v.trim!
         (for k of o{name,author,license,tags} => o[k]p = if !o[k]v => false else true)filter(->!it).length
       modal: title: "Upload Icon"
-      animation-type: 'Rotate': 'rt', 'Flip': 'fl', 'Bounce': 'bc', 'Zoom': 'zm', 'None': 'no'
+      animation-type: 'rt': 'Rotate', 'fl': 'Flip', 'bc': 'Bounce', 'zm': 'Zoom', 'no': 'None'
       new:
         # handler after uploading glyph
         h:
@@ -165,7 +166,7 @@ main = ($scope, $http) ->
             for d in @data =>
               $scope.gh.trim d
               for k of d{name,author,license,tags} => d[k]p = if !d[k]v => false else true
-              d.rotation.p = if /[^0-9.]/exec d.rotation.v => false else true
+              d.rotate.p = if /[^0-9.]/exec d.rotate.v => false else true
             $scope.gh.new.h.set @callback
             $ \#glyph-new-form .submit!
           callback: ->
@@ -180,8 +181,8 @@ main = ($scope, $http) ->
           save: ->
             $scope.gh.trim @data
             for k of @data{name,author,license,tags} => @data[k].p = if !@data[k].v => false else true
-            @data.rotation.p = if /[^0-9.]/exec @data.rotation.v => false else true
-            if [(\p of x) and !x.p for x of @data]length>0 =>
+            @data.rotate.p = if /[^0-9.]/exec @data.rotate.v => false else true
+            if [x.p==false for x of @data]filter(->it)length>0 =>
               if not ( $ \#glyph-new-svg .val! ) => @data.svg.p = false
               return $ '#glyph-new-modal .error-hint.missed' .show!delay 2000 .fadeOut 1000
             if not ( $ \#glyph-new-svg .val! ) => return @data.svg.p = false
@@ -209,8 +210,8 @@ main = ($scope, $http) ->
           author:     { p: true, v: "" }
           author_url: { p: true, v: "" }
           color:      { p: true, v: "" }
-          rotation:   { p: true, v: "" }
-          animation:   { p: true, v: "no" }
+          rotate:     { p: true, v: "" }
+          animation:  { p: true, v: "no" }
           ligature:   { p: true, v: "" }
           license:    { p: true, v: "" }
           tags:       { p: true, v: "" }

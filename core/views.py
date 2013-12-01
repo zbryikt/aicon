@@ -161,7 +161,7 @@ class GlyphView(utils.RestView):
         glyph.author_url = form.cleaned_data["author_url"]
         glyph.license = form.cleaned_data["license"]
         glyph.color = form.cleaned_data["color"]
-        glyph.rotation = form.cleaned_data["rotation"]
+        glyph.rotate = form.cleaned_data["rotate"]
         glyph.animation = form.cleaned_data["animation"]
         glyph.ligature = form.cleaned_data["ligature"]
 
@@ -179,6 +179,7 @@ class GlyphView(utils.RestView):
       form = forms.GlyphForm(request.POST, f)
       if not form.is_valid():    
         context = {"form": form}
+        print(form.errors)
         return HttpResponse(utils.enjson([]))
       tags = form.cleaned_data["tags"]
       glyph = form.save(commit=False)

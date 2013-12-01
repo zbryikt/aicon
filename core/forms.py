@@ -4,12 +4,12 @@ from core.models import Glyph, License
 class GlyphForm(forms.ModelForm):
   class Meta:
     model = Glyph
-    fields = ["svg", "name", "author", "license", "author_url", "license_url", "tags"]
+    fields = ["svg", "name", "author", "license", "author_url", "license_url", "tags", "color", "rotate", "animation", "ligature"]
 
 class GlyphEditForm(forms.ModelForm):
   class Meta:
     model = Glyph
-    fields = ["name", "author", "license", "author_url", "license_url", "tags"]
+    fields = ["name", "author", "license", "author_url", "license_url", "tags", "color", "rotate", "animation", "ligature"]
 
 class LicenseForm(forms.ModelForm):
   class Meta:

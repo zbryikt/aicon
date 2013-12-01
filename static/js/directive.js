@@ -104,9 +104,11 @@ angular.module('utils', []).directive('tags', function($compile){
     scope: {
       "src": "@",
       "del": "&",
-      "class": "@"
+      "class": "@",
+      "color": "@",
+      "animate": "@"
     },
-    template: "<div class='svg-icon {{class}}'><div class='object'></div><div class='mask'></div>" + "<div class='delete' ng-click='$event.stopPropagation();del({e: $event})'>" + "<i class='icon remove'></i></div></div>",
+    template: "<div class='svg-icon {{class}} {{animate}}'><div class='object'></div><div class='mask'></div>" + "<div class='delete' ng-click='$event.stopPropagation();del({e: $event})'>" + "<i class='icon remove'></i></div></div>",
     link: function(scope, element, attrs){
       if (!attrs.del) {
         element.find('.delete').remove();
@@ -138,6 +140,16 @@ angular.module('utils', []).directive('tags', function($compile){
           return x$;
         });
       }
+      attrs.$observe('animate', function(v){
+        var that;
+        if (that = scope.oldAnimation) {
+          element.removeClass(that);
+        }
+        if (v) {
+          element.addClass(v = v.toLowerCase());
+        }
+        return scope.oldAnimation = v;
+      });
       return attrs.$observe('src', function(v){
         var node;
         if (v) {
@@ -145,7 +157,7 @@ angular.module('utils', []).directive('tags', function($compile){
             node = $("<iframe class='object' src='/m/" + v + "'></iframe>");
             element.find('.object').replaceWith(node);
             return node.load(function(){
-              return $(node[0].contentDocument).find("*").css('fill', attrs.color);
+              return $(node[0].contentDocument).find("*").css('fill', attrs.color || '#0f0');
             });
           } else {
             return element.find('.object').replaceWith("<img class='object' src='/m/" + v + "'>");

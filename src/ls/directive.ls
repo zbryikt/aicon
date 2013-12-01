@@ -45,9 +45,9 @@ angular.module \utils, <[]>
   return
     restrict: 'E'
     replace: true
-    scope: {"src": "@", "del": "&", "class": "@"}
+    scope: {"src": "@", "del": "&", "class": "@", "color": "@", "animate": "@"}
     template:
-      "<div class='svg-icon {{class}}'><div class='object'></div><div class='mask'></div>" +
+      "<div class='svg-icon {{class}} {{animate}}'><div class='object'></div><div class='mask'></div>" +
       "<div class='delete' ng-click='$event.stopPropagation();del({e: $event})'>" +
       "<i class='icon remove'></i></div></div>"
     link: (scope, element, attrs) ->
@@ -61,6 +61,10 @@ angular.module \utils, <[]>
       if attrs.ngClick => element.on \click (e) -> scope.$parent
         ..$event = e
         ..$apply attrs.ngClick
+      attrs.$observe \animate ,(v) ->
+        if scope.old-animation => element.removeClass that
+        if v => element.addClass v = v.toLowerCase!
+        scope.old-animation = v
       attrs.$observe \src, (v) ->
         # if in <object>:
         # if v => element.find \.object .replaceWith "<object class='object' type='image/svg+xml' data='/m/#{v}'></object>"
@@ -70,6 +74,6 @@ angular.module \utils, <[]>
           if attrs.color =>
             node = $ "<iframe class='object' src='/m/#{v}'></iframe>"
             element.find \.object .replaceWith node
-            node .load -> $(node.0.contentDocument)find("*").css(\fill, attrs.color)
+            node .load -> $(node.0.contentDocument)find("*").css(\fill, attrs.color or \#0f0)
           else => element.find \.object .replaceWith "<img class='object' src='/m/#{v}'>"
         else element.find \.object .replaceWith "<div class='object'>no data</div>"

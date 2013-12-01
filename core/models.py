@@ -45,7 +45,7 @@ class Glyph(models.Model):
   license = models.ForeignKey(License)
   license_url = models.CharField(max_length = 512, blank=True)
   color = models.CharField(max_length = 32, blank=True)
-  rotation = models.IntegerField(default=0)
+  rotate = models.IntegerField(default=0)
   animation = models.CharField(max_length = 2, choices = ANIMATION_CHOICE, default='no')
   ligature = models.CharField(max_length = 20, blank=True)
   uploader = models.ForeignKey(auth.models.User)
@@ -55,7 +55,7 @@ class Glyph(models.Model):
   # TODO let's take time to wrap it as an API
   wrap_fields = [
     "svg", "name", "author", "author_url", "license", "license_url", 
-    "color", "rotation", "animation","ligature" "create_date", "uploader","pk"]
+    "color", "rotate", "animation","ligature", "create_date", "uploader","pk"]
   @classmethod
   def Wrapper(self, datatype, qs):
     ret = []

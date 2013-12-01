@@ -11,6 +11,7 @@ if (deepEq$(typeof String.prototype.trim, "undefined", '===')) {
 }
 main = function($scope, $http){
   $scope = import$($scope, {
+    xxx: "abc",
     buildFont: function(){
       $scope.st.save();
       console.log("building: " + $scope.st.cur.icons.map(function(it){
@@ -367,11 +368,11 @@ main = function($scope, $http){
         title: "Upload Icon"
       },
       animationType: {
-        'Rotate': 'rt',
-        'Flip': 'fl',
-        'Bounce': 'bc',
-        'Zoom': 'zm',
-        'None': 'no'
+        'rt': 'Rotate',
+        'fl': 'Flip',
+        'bc': 'Bounce',
+        'zm': 'Zoom',
+        'no': 'None'
       },
       'new': {
         h: {
@@ -418,7 +419,7 @@ main = function($scope, $http){
               }) {
                 d[k].p = !d[k].v ? false : true;
               }
-              d.rotation.p = /[^0-9.]/.exec(d.rotation.v) ? false : true;
+              d.rotate.p = /[^0-9.]/.exec(d.rotate.v) ? false : true;
             }
             $scope.gh['new'].h.set(this.callback);
             return $('#glyph-new-form').submit();
@@ -452,14 +453,16 @@ main = function($scope, $http){
             }) {
               this.data[k].p = !this.data[k].v ? false : true;
             }
-            this.data.rotation.p = /[^0-9.]/.exec(this.data.rotation.v) ? false : true;
+            this.data.rotate.p = /[^0-9.]/.exec(this.data.rotate.v) ? false : true;
             if ((function(){
               var results$ = [];
               for (x in this.data) {
-                results$.push('p' in x && !x.p);
+                results$.push(x.p === false);
               }
               return results$;
-            }.call(this)).length > 0) {
+            }.call(this)).filter(function(it){
+              return it;
+            }).length > 0) {
               if (!$('#glyph-new-svg').val()) {
                 this.data.svg.p = false;
               }
@@ -520,7 +523,7 @@ main = function($scope, $http){
             p: true,
             v: ""
           },
-          rotation: {
+          rotate: {
             p: true,
             v: ""
           },

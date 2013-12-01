@@ -28,17 +28,16 @@
       .four.fields.variant
         .field
           label color
-          input(type="text",placeholder="e.g., Red",ng-model="gh.new.n.color.v")
-        .field(ng-class="{true:'',false:'error'}[gh.new.n.rotation.p]")
+          input(type="text",placeholder="e.g., Red",name="color",ng-model="gh.new.n.color.v")
+        .field(ng-class="{true:'',false:'error'}[gh.new.n.rotate.p]")
           label rotation
-          input(type="text",placeholder="e.g., 90",ng-model="gh.new.n.rotation.v")
+          input(type="text",placeholder="e.g., 90",name="rotate",ng-model="gh.new.n.rotate.v")
         .field
           label animation
-          select(ng-model="gh.new.n.animation.v",ng-options="v as k for (k,v) in gh.animationType ")
+          select(name="animation",ng-model="gh.new.n.animation.v",ng-options="k as v for (k,v) in gh.animationType")
         .field
           label ligature
-          input(type="text",placeholder="e.g., arrow",ng-model="gh.new.n.ligature.v")
-
+          input(type="text",placeholder="e.g., arrow",name="ligature",ng-model="gh.new.n.ligature.v")
       .field(ng-class="{true:'',false:'error'}[gh.new.n.tags.p]")
         label Tags
         tags(ng-model="gh.new.n.tags.v", name="tags")
