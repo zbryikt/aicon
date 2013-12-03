@@ -1,0 +1,12 @@
+@font-face {
+  font-family: myfont;
+  src: url("test13.otf");
+  text-rendering: optimizeLegibility; }
+
+i.icon {
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "liga", "dlig";
+  -webkit-font-feature-settings: "liga", "dlig";
+  font-style: normal;
+  font-family: myfont;
+  vertical-align: baseline; }
