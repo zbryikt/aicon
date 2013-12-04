@@ -73,7 +73,12 @@ i.icon:after {
   names = {}
   for it in liga:
     name = getName(it[1], names)
-    fcss.writelines('i.icon.%s:after { content: "%s&nbsp;" }\n'%(name, it[1].ligature))
+    fcss.writelines('i.icon.%s:after {\n'%name)
+    fcss.writelines('  content:  "%s ";\n'%it[1].ligature)
+    if it[2].color: fcss.writelines('  color: %s;\n'%it[1].color)
+    fcss.writelines('}\n')
+    #fcss.writelines('i.icon.%s:after { content: "%s&nbsp;" }\n'%(name, it[1].ligature))
+    #fcss.writelines('i.icon.%s:after { content: "%s&nbsp;" }\n'%(name, it[1].ligature))
   fcss.close()
 
 def toLigaTuple(v):
@@ -122,14 +127,14 @@ class BuildFontView(View):
       for i in xrange(65,90):
         c = f.createChar(i, "C%x"%i)
         c.importOutlines(fn)
-        c = f.createChar(i + 32, "C%x"%i)
+        c = f.createChar(i + 32, "C%x"%(i+32))
         c.importOutlines(fn)
 
     for g in gs:
       if g.license.attribution: att += [g]
       fn = os.path.join(settings.MEDIA_ROOT, str(g.svg))
       if not os.path.exists(fn): continue
-      c = f.createChar(0xf000 + count)
+      c = f.createChar(0xf000 + count, "C%x"%(0xf000 + count))
       c.importOutlines(fn)
       c.left_side_bearing = KERNING
       c.right_side_bearing = KERNING
