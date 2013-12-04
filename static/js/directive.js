@@ -106,7 +106,8 @@ angular.module('utils', []).directive('tags', function($compile){
       "del": "&",
       "class": "@",
       "color": "@",
-      "animate": "@"
+      "animate": "@",
+      "rotate": "@"
     },
     template: "<div class='svg-icon {{class}} {{animate}}'><div class='object'></div><div class='mask'></div>" + "<div class='delete' ng-click='$event.stopPropagation();del({e: $event})'>" + "<i class='icon remove'></i></div></div>",
     link: function(scope, element, attrs){
@@ -140,8 +141,18 @@ angular.module('utils', []).directive('tags', function($compile){
           return x$;
         });
       }
+      attrs.$observe('rotate', function(v){
+        return element.css('-webkit-transform', "rotate(" + (v || 0) + "deg)");
+      });
+      attrs.$observe('color', function(v){
+        var that;
+        if (that = element.find('iframe')[0]) {
+          return $(that.contentDocument).find("*").css('fill', attrs.color || '#000');
+        }
+      });
       attrs.$observe('animate', function(v){
         var that;
+        console.log("rotation: ", v);
         if (that = scope.oldAnimation) {
           element.removeClass(that);
         }

@@ -45,7 +45,7 @@ angular.module \utils, <[]>
   return
     restrict: 'E'
     replace: true
-    scope: {"src": "@", "del": "&", "class": "@", "color": "@", "animate": "@"}
+    scope: {"src": "@", "del": "&", "class": "@", "color": "@", "animate": "@", "rotate": "@"}
     template:
       "<div class='svg-icon {{class}} {{animate}}'><div class='object'></div><div class='mask'></div>" +
       "<div class='delete' ng-click='$event.stopPropagation();del({e: $event})'>" +
@@ -61,7 +61,12 @@ angular.module \utils, <[]>
       if attrs.ngClick => element.on \click (e) -> scope.$parent
         ..$event = e
         ..$apply attrs.ngClick
+      attrs.$observe \rotate ,(v) ->
+        element.css \-webkit-transform "rotate(#{v or 0}deg)"
+      attrs.$observe \color ,(v) ->
+        if element.find \iframe .0 => $(that.contentDocument)find("*").css(\fill, attrs.color or \#000)
       attrs.$observe \animate ,(v) ->
+        console.log "rotation: ",v
         if scope.old-animation => element.removeClass that
         if v => element.addClass v = v.toLowerCase!
         scope.old-animation = v

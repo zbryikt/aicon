@@ -16,37 +16,41 @@
                 icon.edit-modal(src="{{hv.edit.item.svg}}")
               .field
                 label colored
-                icon.edit-modal.colored(src="{{hv.edit.item.svg}}",color="#090")
+                icon.edit-modal.colored(src="{{hv.edit.item.svg}}",color="{{hv.edit.item.color || '#000'}}")
             .two.fields
               .field
                 label animated
-                icon.edit-modal.rotate(src="{{hv.edit.item.svg}}")
+                icon.edit-modal(src="{{hv.edit.item.svg}}",animate="{{gh.animationType[hv.edit.item.animation]}}")
               .field
-                label inverted
+                label rotated
                 //-icon.edit-modal.blurred(src="{{hv.edit.item.svg}}")
-                icon.edit-modal.inverted(src="{{hv.edit.item.svg}}",color="#fff")
+                icon.edit-modal(src="{{hv.edit.item.svg}}",rotate="{{hv.edit.item.rotate || '0'}}")
         .ten.wide.column
           .ui.form.segment
             h3 Customized Settings
             .two.fields
               .field
                 label Name
-                input(type="text",placeholder="used in css class")
+                input(type="text",placeholder="used in css class",ng-model="hv.edit.item.name")
+              .field
+                label Ligature
+                input(type="text",placeholder="use icon by combining letters",ng-model="hv.edit.item.ligature")
+            .three.fields
               .field
                 label Color
-                input(type="text",placeholder="used in colored style.")
-            .two.fields
+                input(type="text",placeholder="used in colored style.",ng-model="hv.edit.item.color")
+              .field
+                label Rotation
+                input(type="text",placeholder="used to rotate icon",ng-model="hv.edit.item.rotate")
               .field
                 label Animation
-                select
+                select(ng-model="hv.edit.item.animation",ng-options="k as v for (k,v) in gh.animationType")
+                //-select
                   option Rotate
                   option Flip
                   option Bounce
                   option Zoom
                   option Blink
-              .field
-                label Background Color
-                input(type="text",placeholder="used in inverted style.")
             .field(style="margin-bottom:0")
               label Also Generate:
               .ui.checkbox(style="padding:5px 5px 0")
