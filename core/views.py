@@ -14,7 +14,15 @@ import fontforge, os, random, glob, zipfile, StringIO, os.path, json, re
 KERNING = 0
 tmp_root = "/tmp/aicon"
 
-def make_preview(fcss, fhtml, cm):
+def getName(g, names):
+  name = re.sub(r"[^a-zA-Z0-9-]", "-", g.name)
+  names.setdefault(name, 0)
+  names[name]+=1
+  c = names[name]
+  name = name + (("_%d"%c) if c>1 else "")
+  return name.lower()
+
+def make_preview(fcss, fhtml, cm, liga):
   names = {}
   fhtml.writelines(
 """<!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="font.css"><style type="text/css">
@@ -26,17 +34,34 @@ border-radius:3px;background:#fff;box-shadow:1px 1px 3px rgba(0,0,0,0.1)}
 }</style></head><body><h3>myfont preview</h3>""")
   fcss.writelines("""
 @font-face{font-family:myfont;src:url('font.ttf')}
-i.icon{font-style:normal;font-family:myfont;vertical-align:baseline}
-i.icon:after{display:inline}
+i.icon{
+  font-style:normal;
+  font-family:myfont;
+  vertical-align:baseline;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "liga", "dlig";
+  -webkit-font-feature-settings: "liga", "dlig";
+}
+i.icon:after {
+  display:inline;
+  font-style:normal;
+  font-family:myfont;
+  vertical-align:baseline;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "liga", "dlig";
+  -webkit-font-feature-settings: "liga", "dlig";
+}
   """)
   fhtml.writelines("<div class='ib' style='background:#bbb;color:#fff'><div>class name</div><div>16px preview</div><div>64px</div></div>")
   for item in cm:
     key = item + 0xf000
-    name = re.sub(r"[^a-zA-Z0-9-]", "-", cm[item].name)
-    names.setdefault(name, 0)
-    names[name]+=1
-    c = names[name]
-    name = name + (("_%d"%c) if c>1 else "")
+    name = getName(cm[item], names)
+    #name = re.sub(r"[^a-zA-Z0-9-]", "-", cm[item].name)
+    #names.setdefault(name, 0)
+    #names[name]+=1
+    #c = names[name]
+    #name = name + (("_%d"%c) if c>1 else "")
+
     fcss.writelines('i.icon.%s:after { content: "\\%4x" }\n'%(name, key))
     fhtml.writelines(
       "<div class='ib'><div>%s</div>"%(name) + 
@@ -45,7 +70,24 @@ i.icon:after{display:inline}
     )
   fhtml.writelines("</body></html>")
   fhtml.close()
+  names = {}
+  for it in liga:
+    name = getName(it[1], names)
+    fcss.writelines('i.icon.%s:after { content: "%s&nbsp;" }\n'%(name, it[1].ligature))
   fcss.close()
+
+def toLigaTuple(v):
+  return " ".join(map(lambda x:"C%x"%x,v))
+def addLigature(f, name, c, liga):
+  uc, lc = [], []
+  for x in liga:
+    v = ord(x)
+    u = [v,v+32] if v < 97 else [v-32,v]
+    uc += [u[0]]
+    lc += [u[1]]
+  c.addPosSub(name, toLigaTuple(uc))
+  c.addPosSub(name, toLigaTuple(lc))
+
 
 class BuildFontView(View):
   def get(self, request, *args, **kwargs):
@@ -66,13 +108,23 @@ class BuildFontView(View):
     print(pk_list)
     if len(pk_list)<=0: return redirect("/")
     pk = [int(x) for x in pk_list]
-    att = []
-    codemap = {}
+    att, codemap = [], {}
+    liga = []
     f = fontforge.font()
     gs = Glyph.objects.all()
     gs = Glyph.objects.filter(pk__in=pk_list)
     svgs = glob.glob("/Users/kirby/htdocs/testcol/font/don/svgs/*")
     count = 1
+
+    # build up basic alphabet
+    if len(gs)>0:
+      fn = os.path.join(settings.MEDIA_ROOT, str(gs[0].svg))
+      for i in xrange(65,90):
+        c = f.createChar(i, "C%x"%i)
+        c.importOutlines(fn)
+        c = f.createChar(i + 32, "C%x"%i)
+        c.importOutlines(fn)
+
     for g in gs:
       if g.license.attribution: att += [g]
       fn = os.path.join(settings.MEDIA_ROOT, str(g.svg))
@@ -84,7 +136,15 @@ class BuildFontView(View):
       c.simplify()
       c.round()
       codemap[count] = g
+      if g.ligature: liga += [[count, g, c]]
       count += 1
+
+    f.addLookup("ligatures", "gsub_ligature", (), (("liga",(("latn",("dflt")),)),))
+    f.addLookupSubtable("ligatures", "ligatures-table")
+
+    for it in liga:
+      addLigature(f, "ligatures-table", it[2], it[1].ligature)
+
     random_name = ""
     while True:
       random_name = hex(int(1000000000000*random.random()))
@@ -106,7 +166,7 @@ class BuildFontView(View):
     f.close()
     fcss = open(css_fn, "w")
     fhtml = open(html_fn, "w")
-    make_preview(fcss, fhtml, codemap)
+    make_preview(fcss, fhtml, codemap, liga)
     files = glob.glob(os.path.join(dir, "*"))
     #buf = StringIO.StringIO()
     zip_fn = os.path.join(tmp_root, random_name+".zip")

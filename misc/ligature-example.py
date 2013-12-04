@@ -4,7 +4,6 @@ import glob
 
 def toLigaTuple(v):
   return " ".join(map(lambda x:"C%x"%x,v))
-
 def addLigature(f, c, liga):
   uc, lc = [], []
   for x in liga:
@@ -14,7 +13,7 @@ def addLigature(f, c, liga):
     lc += [u[1]]
   c.addPosSub("lookup1", toLigaTuple(uc))
   c.addPosSub("lookup1", toLigaTuple(lc))
-  
+
 f = fontforge.font()
 svgs = glob.glob("svgs/*")
 for i in xrange(65,122):
